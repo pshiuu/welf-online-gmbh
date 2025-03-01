@@ -1,0 +1,6179 @@
+Directory structure:
+└── guide/
+    ├── Configuration.mdx
+    ├── Installation.mdx
+    └── reference/
+        ├── Overview.mdx
+        ├── auth/
+        │   ├── WFAuth.mdx
+        │   └── WFAuthMiddleware.mdx
+        ├── components/
+        │   ├── WFCMSList.mdx
+        │   ├── WFComponent.mdx
+        │   ├── WFDynamicList.mdx
+        │   ├── WFFormComponent.mdx
+        │   ├── WFImage.mdx
+        │   ├── WFInvisibleForm.mdx
+        │   ├── WFNav.mdx
+        │   ├── WFSlider.mdx
+        │   └── WFTabs.mdx
+        ├── routing/
+        │   └── WFRoute.mdx
+        ├── services/
+        │   ├── GraphQLClient.mdx
+        │   └── RESTAPIClient.mdx
+        └── utils/
+            ├── createComponent.mdx
+            ├── navigate.mdx
+            └── onReady.mdx
+
+================================================
+File: guide/Configuration.mdx
+================================================
+The xAtom configuration file ⚙️. Your steadfast ally in the realm of web app crafting. Configure your Webflow project for real-time development changes, set the local serving port, and fine-tune vital settings for your site.
+
+Assuming you've just set up your new xAtom project, your `xatom.json` could resemble the following
+
+```json title="xatom.json"
+{
+  "webflowSubdomain": "YOUR_WEBFLOW_SUBDOMAIN",
+  "port": 3020,
+  "source": "./src/app.ts",
+  "dist": "./dist",
+  "scriptList": ["app.js"],
+  "scriptAttribute": "xa-script"
+}
+```
+
+## Exploring xAtom Configuration Essentials
+
+| Name             | Type     | Default                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------- | -------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| webflowSubdomain | string   | YOUR_WEBFLOW_SUBDOMAIN | Indicate your Webflow staging sub-domain. For instance, if your Webflow staging domain is `xatom-app.webflow.io` set `xatom-app` as the value.                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| port             | number   | 3020                   | Choose your preferred local development serving port. xAtom will initiate a development server on this port to preview your Webflow site and your business logic. For instance, if you set it to `3020`, you can access it for testing at `http://localhost:3020`.                                                                                                                                                                                                                                                                                                                                    |
+| source           | string   | ./src/app.ts           | This is your web application's business logic entry point.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| dist             | string   | ./dist                 | This is where your web application's production-ready code will be generated and stored.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| scriptList       | string[] | ["app.js"]             | Specify the JavaScript file to include on each page during development with xAtom. xAtom ensures seamless testing and development by injecting your custom code from the `dist` folder. The default setting is `["app.js"]`, matching the source `./src/app.ts`                                                                                                                                                                                                                                                                                                                                       |
+| scriptAttribute  | string   | xa-script              | You might want to exclude or block specific JavaScript files from your published Webflow pages to prevent conflicts with your local JavaScript custom code. Your site already includes xAtom-deployed scripts, such as `<script xa-script="true" src="https://mysite.com/js/app.js"></script>`. By adding an attribute to this script on the published Webflow site, you can instruct xAtom to prevent the deployed script from executing, ensuring that only your local version runs. To remove scripts from development pages, you can add an attribute like `xa-script="true"` to your script tag. |
+
+
+================================================
+File: guide/Installation.mdx
+================================================
+```mdx-code-block
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+```
+
+To kickstart your journey with xAtom, let's get you set up with the necessary dependencies and fine-tune your TypeScript configuration. It's all about getting your project ready for action, developer-style 🧑‍💻!
+
+> #### Prerequisites
+>
+> - Before we dive in, let's ensure your development environment is all set with the essentials: Node.js (minimum v14.17.0) and your favorite package manager (npm, yarn, or pnpm). [Install Node.js](https://nodejs.org)
+> - Prior TypeScript knowledge is recommended [Learn More](https://www.typescriptlang.org/docs/)
+> - Familiarity with Browser Web APIs and interfaces is necessary. [Learn More](https://developer.mozilla.org/en-US/docs/Web/API)
+
+<br />
+
+## Create a project
+
+To kickstart a shiny new xAtom project, fire up your terminal and unleash the magic with this command
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npx create-xatom-app my-site
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn create xatom-app my-site
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm create xatom-app my-site
+```
+
+</TabItem>
+</Tabs>
+
+## Project structure
+
+Assuming you named your site `my-site`. you can expect to find the following files neatly generated within a freshly minted `my-site/` directory
+
+```bash title="Directory tree"
+my-site
+├── node_modules
+├── dist
+├── src
+│   ├── modules
+│   │   └── index.ts
+│   ├── routes
+│   │   └── index.ts
+│   ├── app.ts
+├── package.json
+├── README.md
+├── tsconfig.json
+└── xatom.json
+```
+
+### Project structure rundown
+
+- `/dist/` The treasure trove of production-ready, minified, and transpiled JavaScript code, primed for deployment.
+- `/src/` Source directory, the nerve center of your project, housing TypeScript source files where ideas turn into code.
+- `/src/modules/` Modules directory, the hub for your web app's modules, you can neatly organizing TypeScript files handling business logic such as authentication, forms, and REST APIs
+- `/src/routes/` App Route directory, Your web app's navigation center, where you fine-tune routes. Set up protected, public paths, and designate modules for seamless page loading
+- `/src/app.js` This file serves as the entry point, where the intricate mechanics of your application are orchestrated and executed.
+- `/package.json` Your gateway to npm packages. Feel free to install and utilize any npm packages of your choice, expanding your project's capabilities with ease.
+- `/README.md` Your project's handbook. detailing project information, setup instructions, and essential insights for seamless development and collaboration. make sure to maintain it well
+- `/tsconfig.json` TypeScript configuration file, xAtom has you covered with all the essential configurations. Feel free to customize as needed, but we've got the basics covered for you.
+- `/xatom.json` xAtom configuration file, Your xAtom command center. This configuration file is your ally, allowing you to specify your Webflow project, set the local serving port for xAtom, and fine-tune other crucial settings for your web development adventure.
+
+## Running the development server
+
+To experience real-time previews of your changes while editing files, 🚀 launch a local development server. This server dynamically serves your Webflow site on localhost, allowing you to test your custom business logic without the need for Webflow publishing. Just make sure you're under your project directory! 📂 and `xatom.json` is configured [Learn More](#).
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npm run start
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn start
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm start
+```
+
+</TabItem>
+</Tabs>
+
+## Build the app for production
+
+To generate production-ready code, 🔨 simply utilize the 'build' command. In production mode, your application undergoes automatic bundling and optimization, ensuring it's primed for deployment and peak performance. Don't forget to be in your project directory! 📂
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npm run build
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn build
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm build
+```
+
+</TabItem>
+</Tabs>
+
+Your web app's production-grade custom code is ready for deployment [Learn More](#).
+
+
+================================================
+File: guide/reference/Overview.mdx
+================================================
+# Overview
+
+Welcome to the xAtom framework's API reference, thoughtfully designed to empower developers with a comprehensive set of APIs for building robust web applications. In the **Components** category, you'll find versatile APIs like **WFComponent**, enabling the conversion of HTML elements into interactive components with extensive control over styling and content updates. **WFDynamicList** streamlines the creation of dynamic listings with functional capabilities, while **WFFormComponent** simplifies complex form flows. **WFInvisibleForm** allows form submissions without any visible form elements.
+
+```mdx-code-block
+import DocCardList from '@theme/DocCardList';
+```
+
+```mdx-code-block
+
+<DocCardList items={[{
+          type: "category",
+          label: "Components",
+          description:"💡 Create interactive elements effortlessly.",
+          items: [{
+          type:"link",
+          href:"/guide/reference/components/WFComponent/",
+          label:"",
+        }],
+        }
+        ]} ></DocCardList>
+
+```
+
+In the realm of **Routing**, **WFRoute** provides granular control over routing, allowing you to designate routes as protected or public to enhance the security of your web apps. **Authentication** is a breeze with **WFAuth**, offering a blueprint for implementing user authentication, and **WFAuthMiddleware**, seamlessly integrating authentication middleware into your application.
+
+```mdx-code-block
+
+<DocCardList items={[
+        {
+          type: "category",
+          label: "Routing",
+          description:"🚀 Total control over navigation",
+          items: [{
+          type:"link",
+          href:"/guide/reference/routing/WFRoute/",
+          label:"",
+        }],
+        },{
+          type: "category",
+          label: "Authentication",
+          description:"🔒 Strengthening web app security",
+          items: [{
+          type:"link",
+          href:"/guide/reference/auth/WFAuth/",
+          label:"",
+        }],
+        }
+        ]} ></DocCardList>
+
+```
+
+Under the **Utilities** section, **onReady** empowers you to execute code precisely when your Webflow site loads, while **navigate** facilitates programmatic navigation. For dynamic component creation, **createComponent** is your API of choice.
+
+```mdx-code-block
+
+<DocCardList items={[
+       {
+          type: "category",
+          label: "Utilities",
+          description:"🛠️ Simplifying development tasks",
+          items: [{
+          type:"link",
+          href:"/guide/reference/utils/onReady/",
+          label:"",
+        }],
+        }
+        ]} ></DocCardList>
+
+```
+
+In the realm of **Data Services**, the **REST API Client** enables seamless integration with any REST API, while the **Apollo GraphQL Client** provides efficiency and flexibility for interacting with GraphQL APIs. Explore xAtom's developer-friendly APIs, designed to accelerate your web app development with precision and control.
+
+```mdx-code-block
+
+<DocCardList items={[
+      {
+          type: "category",
+          label: "Data Services",
+          description:"🌐 Streamlined data integration",
+          items: [{
+          type:"link",
+          href:"/guide/reference/services/RESTAPIClient/",
+          label:"",
+        }],
+        }
+        ]} ></DocCardList>
+
+```
+
+
+================================================
+File: guide/reference/auth/WFAuth.mdx
+================================================
+The `WFAuth` class is your go-to authentication blueprint for web applications within the xAtom Framework. With `WFAuth`, you gain access to a world of possibilities:
+
+- **Role-Based Support:** Seamlessly manage user privileges based on roles. 👥
+- **Configure User Information:** Easily set and manage user details such as email and display name. 🔧
+- **Multiple Instances:** Create and manage multiple `WFAuth` instances for versatility. 🔄
+- **Flexible and Extensible:** Easily adapt and extend `WFAuth` to meet your project's unique requirements. 🛠️
+
+Empower your web application with the flexibility and security of `WFAuth`! 💪🔐
+
+## Getting Started
+
+**Initialization**: To begin using the `WFAuth` class, follow these steps:
+
+> #### Pro Tip
+>
+> It's considered best practice to configure with types. these enable TypeScript validation in your favorite IDE or during transpilation.
+
+```typescript title="Example"
+import { WFAuth } from "@xatom/core";
+
+// Initialize the WFAuth instance with user data, roles, and configuration
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set the default role after initialization
+userAuth.setRole("GUEST");
+
+// Check if the user is logged in (should return false)
+console.log(userAuth.isLoggedIn()); // false
+
+// Set user information
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Configure the user's token
+userAuth.setConfig({
+  token: "XYZ",
+});
+
+// Change the user's role
+userAuth.setRole("USER");
+
+// Check if the user is logged in (should return true)
+console.log(userAuth.isLoggedIn()); // true
+
+// Log the user out
+userAuth.logout();
+
+// Check if the user is logged in after logout (should return false)
+console.log(userAuth.isLoggedIn()); // false
+```
+
+#### Syntax
+
+```typescript
+WFAuth<U = WFUserDefaultType, R = WFUserDefaultRole, C = WFAuthConfig>(config?:C);
+```
+
+## Methods
+
+The `WFAuth` class provides an extensive set of properties and methods to enhance the security of your web application:
+
+### `setUser(user)`
+
+The `setUser` method allows you to set user information, such as the user's name and email address, as needed for your application.
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set user information using the `setUser` method.
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+```
+
+#### Syntax
+
+```typescript
+setUser(user: U): void
+```
+
+#### Parameters {#set-user-parameters}
+
+| Name   | Type                | Description                            |
+| ------ | ------------------- | -------------------------------------- |
+| `user` | `WFUserDefaultType` | An object containing user information. |
+
+---
+
+### `getUser()`
+
+The `getUser` method allows you to retrieve user information stored within the `WFAuth` instance.
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set user information using the `setUser` method.
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Retrieve user information using the `getUser` method.
+const userInfo = userAuth.getUser();
+console.log(userInfo); // {fullName: "John Doe", email: "john@doe.com"}
+```
+
+#### Syntax
+
+```typescript
+getUser(): U
+```
+
+---
+
+### `setRole(role)`
+
+The `setRole` method allows you to set the user's role, specifying whether they are a `GUEST`, `USER`, `VIP`, or `ADMIN`. enabling role-based access control in your application.
+
+#### Example
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set user information using the `setUser` method.
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Set the user's role to "USER"
+userAuth.setRole("USER");
+```
+
+#### Syntax
+
+```typescript
+setRole(role: R): void
+```
+
+#### Parameters {#set-role-parameters}
+
+| Name   | Type                | Description |
+| ------ | ------------------- | ----------- |
+| `role` | `WFUserDefaultRole` | User role   |
+
+---
+
+### `getRole()`
+
+The `getRole` method allows you to retrieve user role information stored within the `WFAuth` instance.
+
+#### Example
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set user information using the `setUser` method.
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Set the user's role to "USER"
+userAuth.setRole("USER");
+
+// Retrieve user role information using the `getRole` method.
+const userRole = userAuth.getRole();
+console.log(userRole); // USER
+
+// Set the user's role to "GUEST"
+userAuth.setRole("GUEST");
+
+// Retrieve user role information using the `getRole` method.
+const newUserRole = userAuth.getRole();
+console.log(newUserRole); // GUEST
+```
+
+#### Syntax
+
+```typescript
+getRole(): R
+```
+
+---
+
+### `setConfig(config)`
+
+The `setConfig` method allows you to set user extra configuration, such as tokens, refresh tokens, or current user status, based on your requirements.
+
+#### Example
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set user information using the `setUser` method.
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Set user config information using the `setConfig` method.
+userAuth.setConfig({
+  token: "xyz",
+});
+```
+
+#### Syntax
+
+```typescript
+setConfig(config: C): void
+```
+
+#### Parameters {#set-role-parameters}
+
+| Name     | Type           | Description        |
+| -------- | -------------- | ------------------ |
+| `config` | `WFAuthConfig` | User config object |
+
+---
+
+### `getConfig()`
+
+The `getConfig` method allows you to retrieve configuration information stored within the `WFAuth` instance.
+
+#### Example
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set user information using the `setUser` method.
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Set user config information using the `setConfig` method.
+userAuth.setConfig({
+  token: "xyz",
+});
+
+// Retrieve user config information using the `getConfig` method.
+const config = userAuth.getConfig();
+console.log(config); // {token:"xyz"}
+```
+
+#### Syntax
+
+```typescript
+getConfig(): C
+```
+
+---
+
+### `isLoggedIn()`
+
+The `isLoggedIn` method allows you to check whether a user is currently logged in and if user data is stored.
+
+#### Example
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Check if the user is initially logged in (should be false)
+const isLoggedIn = userAuth.isLoggedIn();
+console.log(isLoggedIn); // false
+
+// Set user information using the `setUser` method.
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Set the user's role to "USER"
+userAuth.setRole("USER");
+
+// Check if the user is now logged in (should be true)
+const isNowLoggedIn = userAuth.isLoggedIn();
+console.log(isNowLoggedIn); // true
+```
+
+#### Syntax
+
+```typescript
+isLoggedIn(): boolean
+```
+
+---
+
+### `logout()`
+
+The `logout` method allows you to clear all stored information about the user, including user data, user config, and user role.
+
+#### Example
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set user information using the `setUser` method.
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Set the user's role to "USER"
+userAuth.setRole("USER");
+
+// Check if the user is initially logged in (should be true)
+const isLoggedIn = userAuth.isLoggedIn();
+console.log(isLoggedIn); // true
+
+// Log the user out
+userAuth.logout();
+
+// Check if the user is now logged out (should be false)
+const isNowLoggedIn = userAuth.isLoggedIn();
+console.log(isNowLoggedIn); // false
+```
+
+#### Syntax
+
+```typescript
+logout(): void
+```
+
+
+================================================
+File: guide/reference/auth/WFAuthMiddleware.mdx
+================================================
+The `WFAuthMiddleware` class is like a trusty shield for your web application, packed with security features to keep it safe and sound:
+
+- **Safeguard**: Protect specific sections of your business logic by effortlessly adding middleware. 🛡️
+- **Out-of-the-box Protection**: Ensure security for your `WFRoute` instances. 🚧
+- **Flexibility**: Customize and extend middleware to meet your unique requirements. 🧩
+- **Role-Based Access Control**: Manage access control using role information stored in the `WFAuth` instance. 👤
+
+Empower your web application's security with the versatile `WFAuthMiddleware` middleware. 🔐💪
+
+## Getting Started
+
+**Initialization**: To kickstart your journey with the `WFAuthMiddleware` class, let's follow these steps:
+
+```typescript title="Example"
+import { WFAuth, WFAuthMiddleware, WFRoute } from "@xatom/core";
+
+// Initialize the WFAuth instance with user data, roles, and configuration
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER",
+  {
+    token: string;
+  }
+>();
+
+// Set the default role after initialization
+userAuth.setRole("USER");
+
+// Set user information
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Create a userMiddleware instance with the WFAuth instance
+const userMiddleware = new WFAuthMiddleware(userAuth);
+
+// Define a WFRoute that allows only non-logged-in users to access the sign-up page
+new WFRoute("/sign-up")
+  .withMiddleware(userMiddleware, "GUEST", "allow", {
+    onError: () => {
+      // If the user's role is not guest, navigate to the dashboard
+      window.location = "/dashboard";
+    },
+  })
+  .execute(() => {
+    // Execute your logic for /sign-up
+  });
+```
+
+#### Syntax
+
+```typescript
+WFAuthMiddleware(auth:WFAuth);
+```
+
+## Methods
+
+The `WFAuthMiddleware` class offers a useful array of properties and methods to enhance the middleware functionality of your web application:
+
+### `allowTo(role)`
+
+The `allowTo` method allows you to validate if the current user role matches the specified role.
+
+```typescript title="Example"
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER" | "ADMIN",
+  {
+    token: string;
+  }
+>();
+
+// Set the default role after initialization
+userAuth.setRole("USER");
+
+// Set user information
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Create a userMiddleware instance with the WFAuth instance
+const userMiddleware = new WFAuthMiddleware(userAuth);
+
+const isAllowToGuest = userMiddleware.allowTo("GUEST");
+
+console.log(isAllowToGuest); // false
+
+const isAllowToUser = userMiddleware.allowTo("USER");
+
+console.log(isAllowToUser); // true
+
+const isAllowToAdmin = userMiddleware.allowTo("ADMIN");
+
+console.log(isAllowToAdmin); // false
+```
+
+#### Syntax
+
+```typescript
+allowTo(role: R): boolean
+```
+
+#### Parameters {#allow-parameters}
+
+| Name   | Type                | Description               |
+| ------ | ------------------- | ------------------------- |
+| `role` | `WFUserDefaultRole` | The role to check against |
+
+---
+
+### `disallowedTo(role)`
+
+The `disallowedTo` method allows you to validate if the current user role does not match the specified role.
+
+```typescript title="Example"
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER" | "ADMIN",
+  {
+    token: string;
+  }
+>();
+
+// Set the default role after initialization
+userAuth.setRole("USER");
+
+// Set user information
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Create a userMiddleware instance with the WFAuth instance
+const userMiddleware = new WFAuthMiddleware(userAuth);
+
+const isDisallowToGuest = userMiddleware.disallowedTo("GUEST");
+
+console.log(isDisallowToGuest); // true
+
+const isDisallowToUser = userMiddleware.disallowedTo("USER");
+
+console.log(isDisallowToUser); // false
+
+const isDisallowToAdmin = userMiddleware.disallowedTo("ADMIN");
+
+console.log(isDisallowToAdmin); // true
+```
+
+#### Syntax
+
+```typescript
+disallowedTo(role: R): boolean
+```
+
+#### Parameters {#disallow-parameters}
+
+| Name   | Type                | Description               |
+| ------ | ------------------- | ------------------------- |
+| `role` | `WFUserDefaultRole` | The role to check against |
+
+---
+
+### `getAuth()`
+
+The `getAuth` method returns the `WFAuth` instance.
+
+```typescript title="Example"
+// Initialize a WFAuth instance
+const userAuth = new WFAuth<
+  {
+    fullName: string;
+    email: string;
+  },
+  "GUEST" | "USER" | "ADMIN",
+  {
+    token: string;
+  }
+>();
+
+// Set the default role after initialization
+userAuth.setRole("USER");
+
+// Set user information
+userAuth.setUser({
+  fullName: "John Doe",
+  email: "john@doe.com",
+});
+
+// Create a userMiddleware instance with the WFAuth instance
+const userMiddleware = new WFAuthMiddleware(userAuth);
+
+// Retrieve the WFAuth instance using the `getAuth` method
+const userMiddlewareAuth = userMiddleware.getAuth();
+
+console.log(userMiddlewareAuth); // WFAuth instance
+```
+
+#### Syntax
+
+```typescript
+getAuth(): WFAuth
+```
+
+
+================================================
+File: guide/reference/components/WFCMSList.mdx
+================================================
+# WFCMSList 🆕
+
+```mdx-code-block
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+```
+
+The `WFCMSList` class offers powerful functionality for loading, filtering, sorting, and paginating collection lists without the need for page redirection or refreshing.
+
+## Getting Started
+
+**Initialization**: To begin using the `WFCMSList` class in your xAtom project, you'll first need to install the `@xatom/cmslist` package. After installation, initialize `WFCMSList` as demonstrated in the example below:
+
+### Installing the package
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npm install @xatom/cmslist
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn add @xatom/cmslist
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm add @xatom/cmslist
+```
+
+</TabItem>
+</Tabs>
+
+
+```typescript title="Example"
+import { WFCMSList } from "@xatom/cmslist";
+import { onReady, WFComponent, createComponent } from "@xatom/core";
+
+// Wait until the webflow page has loaded
+onReady(() => {
+  // Initialize WFCMSList with configuration object
+  const cms = new WFCMSList(".cms", {
+    numberOfItemPerPage: 10,
+    removeNativePaginationElements: true,
+  });
+
+  // Clone an item as a template
+  const itemClone = cms.getInitialItemAsTemplate();
+
+  // Update the text content of the cloned item
+  itemClone.updateTextViaAttrVar({
+    title: "Hello World",
+  });
+
+  // Create a custom item using createComponent
+  const myItem = createComponent("div");
+  myItem.setTextContent("Another Item");
+
+  // Wait for all collection items to be fetched
+  cms.onAllCollectionItemsReady(() => {
+    // Add the cloned item and the custom item to the CMS list
+    cms.addItem(itemClone, 0); // Add to zeroth index
+    cms.addItem(myItem, 1); // Add to first index
+  });
+
+  // Initialize WFComponent for the next button
+  const nextBtn = new WFComponent(".next-btn");
+
+  // Event listener for the next button to navigate to the next page
+  nextBtn.on("click", () => {
+    cms.goToNextPageIndex();
+  });
+
+  // Initialize WFComponent for the filter button
+  const filterBtn = new WFComponent(".filter-btn");
+
+  // Event listener for the filter button to apply a filter and render the list
+  filterBtn.on("click", () => {
+    cms.setFilterSortConfig({
+      filter: (item, dataset) => {
+        return dataset.title.includes("Hello");
+      },
+    });
+    cms.goToPageIndex(0);
+    cms.forceRenderList();
+  });
+
+  // Initialize WFComponent for the reset button
+  const resetBtn = new WFComponent(".reset-btn");
+
+  // Event listener for the reset button to clear the filter and render the list
+  resetBtn.on("click", () => {
+    cms.setFilterSortConfig({});
+    cms.goToPageIndex(0);
+    cms.forceRenderList();
+  });
+});
+```
+
+This example demonstrates the integration of `WFCMSList` into an xAtom project, showcasing the following features:
+
+- Waiting until all items are dynamically fetched from the collection.
+- Setting the maximum number of items per page.
+- Adding an item to the list even if it's not present in the collection.
+- Applying filters to the list and resetting the filter.
+- Obtaining a clone of the item template for customization.
+
+
+**Syntax**
+
+```typescript
+new WFCMSList(selector: string, config?: CMSListConfig);
+```
+
+### Configuration Object
+
+| Name     | Type            | Description                                                  |
+| -------- | --------------- | ------------------------------------------------------------ |
+| `config` | `CMSListConfig` | The optional configuration object for customizing the behavior of the CMS list. |
+
+`CMSListConfig` object type
+
+| Name                               | Type      | Description                                                                                                   |
+| ---------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
+| `numberOfItemPerPage`              | `number`  | The maximum number of items allowed per page. If set to `0`, it means infinite items per page. Default is `0`. |
+| `autoLoadAllItems`                 | `boolean` | Determines whether to automatically load all items on page load. Default is `true`.                           |
+| `removeNativePaginationElements`   | `boolean` | Determines whether to remove Webflow's native pagination buttons. Default is `true`.                          |
+| `resetIX2`                         | `boolean` | If you are using Webflow interactions on the item, set `resetIX2` to `true`. Default is `true`.              |
+
+> #### Note
+>
+> **Compatibility with `WFComponent`**
+>
+> The `WFCMSList` seamlessly extends the capabilities of the `WFComponent` class. This means that all the properties and methods available in `WFComponent` are fully compatible and can be used with `WFCMSList`. This compatibility provides you with a wide range of options for enhancing and customizing the behavior of your cms lists. Feel free to leverage the power of both components to achieve your desired results efficiently.
+
+
+## Methods
+
+The `WFCMSList` class provides a comprehensive set of properties and methods to enhance your development workflow:
+
+### `loadAllCollectionItems()` {#load-all-items}
+
+The `loadAllCollectionItems()` method in the `WFCMSList` class allows you to load all items from paginated pages and add them to the current collection. This method is useful when `autoLoadAllItems` is set to false and you need to load items manually based on some interaction.
+
+```typescript title="Example"
+// Initialize WFCMSList with autoLoadAllItems set to false
+const list = new WFCMSList(".cms", { autoLoadAllItems: false });
+
+// Load all items after a certain delay
+setTimeout(() => {
+    list.loadAllCollectionItems();
+}, 5000);
+```
+
+**Syntax**
+
+```typescript
+loadAllCollectionItems(): void;
+```
+
+---
+
+
+### `addItem(el, index)` {#add-item}
+
+The `addItem()` method in the `WFCMSList` class allows you to add a new item to the collection list at a specified index.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Create a new item using WFComponent
+const newItem = new WFComponent(".new-item");
+
+// Add the new item to the collection list at index 0
+list.addItem(newItem, 0);
+```
+
+**Syntax**
+
+```typescript
+addItem(el: WFComponent, index?: number): void;
+```
+
+#### Parameters {#add-item-parameters}
+
+| Name      | Type            | Description                                    |
+| --------- | --------------- | ---------------------------------------------- |
+| `el`      | `WFComponent`   | The new item to add to the collection list.    |
+| `index?`   | `number`        | The optional index at which to add the item.   |
+
+---
+
+### `removeItem(index)` {#remove-item}
+
+The `removeItem()` method in the `WFCMSList` class allows you to remove an item from the collection list at the specified index.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Remove the item at index 0 from the collection list
+list.removeItem(0);
+```
+
+**Syntax**
+
+```typescript
+removeItem(index: number): void;
+```
+
+#### Parameters {#remove-item-parameters}
+
+| Name      | Type            | Description                                   |
+| --------- | --------------- | --------------------------------------------- |
+| `index?`   | `number`        | The index of the item to be removed.         |
+
+---
+
+### `getAllItems()` {#get-all-items}
+
+The `getAllItems()` method in the `WFCMSList` class returns an array containing all items in the collection list.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Get all items from the collection list
+const allItems = list.getAllItems();
+
+console.log(allItems); // Array of WFComponent<HTMLDivElement>
+```
+
+**Syntax**
+
+```typescript
+getAllItems(): WFComponent<HTMLDivElement>[];
+```
+
+---
+
+### `getItemCount()` {#get-item-count}
+
+The `getItemCount()` method in the `WFCMSList` class returns the total number of items in the collection list.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Get the total number of items in the collection list
+const itemCount = list.getItemCount();
+
+console.log(itemCount); // 20
+```
+
+**Syntax**
+
+```typescript
+getItemCount(): number;
+```
+
+---
+
+### `forceRenderList()` {#force-render-list}
+
+The `forceRenderList()` method in the `WFCMSList` class forces the rendering of the collection list.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Force render the collection list
+list.forceRenderList();
+```
+
+**Syntax**
+
+```typescript
+forceRenderList(): void;
+```
+
+---
+
+### `onLoadingChange(cb)` {#on-loading-change}
+
+The `onLoadingChange()` method in the `WFCMSList` class allows you to listen for changes in the loading status of the collection list.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Define a callback function
+const loadingCallback = (status: boolean) => {
+  console.log("Loading status:", status);
+};
+
+// Register the callback function to listen for loading status changes
+const unregisterCallback = list.onLoadingChange(loadingCallback);
+```
+
+**Syntax**
+
+```typescript
+onLoadingChange(cb: (status: boolean) => void): () => void;
+```
+
+#### Parameters {#on-loading-change-parameter}
+
+| Name      | Type                    | Description                              |
+| --------- | ----------------------- | ---------------------------------------- |
+| `cb`      | `(status: boolean) => void` | The callback function to be invoked when the loading status changes. |
+
+#### Returns
+
+A function that can be called to unregister the callback.
+
+---
+
+### `onAllCollectionItemsReady(cb)` {#on-all-collection-items-ready}
+
+The `onAllCollectionItemsReady()` method in the `WFCMSList` class allows you to listen for the event when all collection items are ready.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Define a callback function
+const itemsReadyCallback = () => {
+  console.log("All collection items are ready.");
+};
+
+// Register the callback function to listen for the event
+const unregisterCallback = list.onAllCollectionItemsReady(itemsReadyCallback);
+```
+
+**Syntax**
+
+```typescript
+onAllCollectionItemsReady(cb: () => void): () => void;
+```
+
+#### Parameters {#on-all-collection-items-ready-parameter}
+
+| Name      | Type          | Description                                |
+| --------- | ------------- | ------------------------------------------ |
+| `cb`      | `() => void`  | The callback function to be invoked when all collection items are ready. |
+
+#### Returns
+
+A function that can be called to unregister the callback.
+
+---
+
+### `getTotalPagesCount()` {#get-total-pages-count}
+
+The `getTotalPagesCount()` method in the `WFCMSList` class returns the total number of pages in the collection list.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Get the total number of pages
+const totalPages = list.getTotalPagesCount();
+
+console.log("Total pages:", totalPages);
+```
+
+**Syntax**
+
+```typescript
+getTotalPagesCount(): number;
+```
+
+#### Returns
+
+The total number of pages in the collection list.
+
+---
+
+### `getCurrentPageIndex()` {#get-current-page-index}
+
+The `getCurrentPageIndex()` method in the `WFCMSList` class returns the index of the current page in the collection list.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Get the index of the current page
+const currentPageIndex = list.getCurrentPageIndex();
+
+console.log("Current page index:", currentPageIndex);
+```
+
+**Syntax**
+
+```typescript
+getCurrentPageIndex(): number;
+```
+
+#### Returns
+
+The index of the current page in the collection list.
+
+---
+
+### `goToPageIndex(index)` {#go-to-page-index}
+
+The `goToPageIndex()` method in the `WFCMSList` class allows you to navigate to a specific page in the collection list.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Go to the 3rd page in the collection list
+list.goToPageIndex(2);
+```
+
+**Syntax**
+
+```typescript
+goToPageIndex(index: number): void;
+```
+
+#### Parameters {#go-to-page-index-parameter}
+
+| Name      | Type     | Description                            |
+| --------- | -------- | -------------------------------------- |
+| `index`   | `number` | The index of the page to navigate to. |
+
+---
+
+### `getInitialItemAsTemplate()` {#get-initial-item-as-template}
+
+The `getInitialItemAsTemplate()` method in the `WFCMSList` class returns a template of the initial item in the collection list.
+
+```typescript title="Example"
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Get the initial item template
+const itemTemplate = list.getInitialItemAsTemplate();
+```
+
+**Syntax**
+
+```typescript
+getInitialItemAsTemplate(): WFComponent<HTMLDivElement>;
+```
+
+#### Returns
+
+A template of the initial item in the collection list.
+
+---
+
+### `goToNextPageIndex()` {#go-to-next-page-index}
+
+The `goToNextPageIndex()` method in the `WFCMSList` class allows you to navigate to the next page in the collection list.
+
+```typescript
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Go to the next page in the collection list
+list.goToNextPageIndex();
+```
+
+---
+
+### `goToPreviousPageIndex()` {#go-to-previous-page-index}
+
+The `goToPreviousPageIndex()` method in the `WFCMSList` class allows you to navigate to the previous page in the collection list.
+
+```typescript
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Go to the previous page in the collection list
+list.goToPreviousPageIndex();
+```
+
+---
+
+### `setNumberOfItemsPerPage()` {#set-number-of-items-per-page}
+
+The `setNumberOfItemsPerPage()` method in the `WFCMSList` class allows you to set the number of items per page in the collection list.
+
+```typescript
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Set the number of items per page to 10
+list.setNumberOfItemsPerPage(10);
+```
+
+**Syntax**
+
+```typescript
+setNumberOfItemsPerPage(numberOfItemsPerPage: number, pageIndex?: number): void;
+```
+
+#### Parameters {#set-number-of-items-per-page-parameter}
+
+| Name                   | Type     | Description                                     |
+| ---------------------- | -------- | ----------------------------------------------- |
+| `numberOfItemsPerPage` | `number` | The number of items to display per page.        |
+| `pageIndex`            | `number` | (Optional) The index of the page to navigate to after setting the number of items per page. If not provided, the current page remains unchanged. |
+
+
+---
+
+### `itemRenderer(cb)` {#item-renderer}
+
+The `itemRenderer()` method in the `WFCMSList` class allows you to specify a custom rendering function for each item in the collection list.
+
+```typescript
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Define a custom item renderer function
+list.itemRenderer(({ item, index, allItems }) => {
+  // Customize the rendering of each item
+  const numberText = item.getChildAsComponent(".number-index");
+  numberText.setTextContent(`#${index + 1}`);
+  return item;
+});
+```
+
+**Syntax**
+
+```typescript
+itemRenderer(cb: (data: { item: WFComponent; index: number; allItems: WFComponent[]; }) => WFComponent): void;
+```
+
+#### Parameters {#item-renderer-parameter}
+
+| Name  | Type                                                     | Description                                                        |
+| ----- | -------------------------------------------------------- | ------------------------------------------------------------------ |
+| `cb`  | `(data: { item: WFComponent; index: number; allItems: WFComponent[]; }) => WFComponent` | The custom rendering function for each item in the collection list. |
+
+---
+
+### `setFilterSortConfig(config)` {#set-filter-sort-config}
+
+The `setFilterSortConfig()` method in the `WFCMSList` class allows you to set filter and sort configurations for the collection list.
+
+```typescript
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+/**
+ * <div class="cms-item" data-category="featured" data-date="June, 08, 2023">
+ * ...
+ * </div> 
+ */
+
+// Define filter and sort configurations
+list.setFilterSortConfig({
+  // Define a filter function
+  filter: (item, datasets) => {
+    // Implement your filter logic
+    return datasets.category === "featured";
+  },
+  // Define a sort function
+  sort: (itemA, itemB) => {
+    // Implement your sort logic
+    return itemA.datasets.date.localeCompare(itemB.datasets.date);
+  },
+});
+```
+
+**Syntax**
+
+```typescript
+setFilterSortConfig(config: {
+  filter?: (item: WFComponent<HTMLElement>, datasets: { [key: string]: string; }) => boolean;
+  sort?: (itemA: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }, itemB: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }) => number;
+}): void;
+```
+
+#### Parameters {#set-filter-sort-config-parameter}
+
+| Name     | Type                                                                                                     | Description                                                                                   |
+| -------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `config` | `{ filter?: (item: WFComponent<HTMLElement>, datasets: { [key: string]: string; }) => boolean; sort?: (itemA: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }, itemB: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }) => number; }` | The filter and sort configurations for the collection list. |
+
+##### Filter Configuration {#filter-config}
+
+| Name       | Type                                                                                     | Description                                   |
+| ---------- | ---------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `filter`   | `(item: WFComponent<HTMLElement>, datasets: { [key: string]: string; }) => boolean`     | A function to filter items in the collection. |
+
+##### Sort Configuration {#sort-config}
+
+| Name       | Type                                                                                                                                              | Description                                   |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `sort`     | `(itemA: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }, itemB: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }) => number`     | A function to sort items in the collection. |
+
+---
+
+### `getFilterSortConfig()` {#get-filter-sort-config}
+
+The `getFilterSortConfig()` method in the `WFCMSList` class retrieves the current filter and sort configurations for the collection list.
+
+```typescript
+// Initialize WFCMSList
+const list = new WFCMSList(".cms");
+
+// Get the current filter and sort configurations
+const config = list.getFilterSortConfig();
+
+console.log(config);
+```
+
+**Syntax**
+
+```typescript
+getFilterSortConfig(): {
+  filter?: (item: WFComponent<HTMLElement>, datasets: { [key: string]: string; }) => boolean;
+  sort?: (itemA: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }, itemB: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }) => number;
+};
+```
+
+#### Return Value {#get-filter-sort-config-return}
+
+| Name     | Type                                                                                                     | Description                                                                                   |
+| -------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `filter` | `(item: WFComponent<HTMLElement>, datasets: { [key: string]: string; }) => boolean`                     | The filter function for the collection list.                                                  |
+| `sort`   | `(itemA: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }, itemB: { item: WFComponent<HTMLElement>; datasets: { [key: string]: string; }; }) => number` | The sort function for the collection list.                                                    |
+
+---
+
+================================================
+File: guide/reference/components/WFComponent.mdx
+================================================
+`WFComponent` serves as the driving force behind xAtom's reactivity, enabling the transformation of Webflow elements into dynamic and interactive components. With `WFComponent`, you gain mastery over various aspects, including styling, text updates, attribute control, CSS classes, and event listeners (e.g. `onclick` and `onchange`). As the pivotal class within the xAtom framework, `WFComponent`, initiated by a selector query, propels your web development endeavors into dynamic realms. ✌️
+
+## Getting Started
+
+**Initialization**: To unlock the immense potential of `WFComponent` in your xAtom project, begin by creating a new `WFComponent` instance. Provide a valid selector as an argument to the class constructor. For instance:
+
+```typescript title="Example"
+import { WFComponent } from "@xatom/core";
+
+// Create a new WFComponent instance for the first element with the CSS class ".btn"
+const myComponent = new WFComponent(".btn");
+```
+
+**Control and Customize**: Once `myComponent` is initialized, you gain precise control over styling, text updates, attribute management, CSS classes, and event listeners for all elements matching the specified selector. Customize and fine-tune your `myComponent` to seamlessly align with your project's unique requirements.
+
+### Explore Additional Initialization Methods
+
+```typescript title="Additional Initialization Examples"
+// Initialize WFComponent using different selectors
+const buttonA = new WFComponent("#button");
+const buttonB = new WFComponent(".button");
+const buttonC = new WFComponent(`[xa-type="button"]`);
+const buttonD = new WFComponent(`.buttons > button`);
+// Benefit from TypeScript type support
+const container = new WFComponent<HTMLDivElement>(`.mydiv`);
+```
+
+These examples illustrate various methods to create `WFComponent` instances using different CSS selectors. The last example showcases how to leverage TypeScript type support when initializing `WFComponent` for specific Webflow elements. Feel free to explore these options to best suit your project's needs. 💡
+
+## Selector Parameter
+
+The `selector` parameter within `WFComponent` is versatile and can accept one of the following types:
+
+- A string that precisely matches a valid CSS selector.
+- An HTMLElement representing a specific element in the document.
+- An existing `WFComponent` instance.
+
+If the provided string is not a valid CSS selector, it will result in an exception. You can learn more about CSS selectors [here](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors)
+
+```typescript title="Selector example"
+// Example: Initialize WFComponent with a CSS selector
+const myComponentBySelector = new WFComponent(".btn");
+
+// Example: Initialize WFComponent with an HTMLElement
+const myDiv = document.getElementById("myDiv");
+const myComponentByElement = new WFComponent(myDiv);
+
+// Example: Initialize WFComponent with an existing WFComponent instance
+const existingComponent = new WFComponent(".existing");
+const myComponentByInstance = new WFComponent(existingComponent);
+```
+
+This provides insights into the flexibility of the selector parameter, allowing developers to initialize WFComponent using various supported types, enhancing its adaptability in different scenarios. 🎯
+
+## Methods
+
+The `WFComponent` class offers a comprehensive set of properties and methods to empower your development journey:
+
+### `getElement()` {#get-element}
+
+Obtain the underlying HTML element linked to the `WFComponent` instance, granting you access to native HTML element APIs for extended functionality.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a <div> element
+const container = new WFComponent<HTMLDivElement>(`.mydiv`);
+// Retrieve the associated HTML element
+const htmlElement = container.getElement();
+// Now, harness the full power of native HTML element APIs
+console.log(htmlElement);
+```
+
+**Syntax**
+
+```typescript
+getElement() : HTMLElement;
+```
+
+With `getElement()`, you can seamlessly integrate custom behavior into your web components beyond the scope of xAtom.
+
+---
+
+### `setAttribute(key,value)` {#set-attribute}
+
+Assign a specific attribute to the element by specifying the attribute key and its corresponding value.
+
+```typescript title="Example"
+// Create a new WFComponent instance for an input element
+const input = new WFComponent(`.myinput`);
+// Set a native HTML attribute as an example
+input.setAttribute("disabled", "disabled");
+// Define a custom attribute with a key and value
+input.setAttribute("xa-type", "my-btn");
+```
+
+**Syntax**
+
+```typescript
+setAttribute(key:string,value:string) : void;
+```
+
+#### Parameters {#set-attribute-parameter}
+
+| Name    | Type     | Description                           |
+| ------- | -------- | ------------------------------------- |
+| `key`   | `string` | The attribute key to be set.          |
+| `value` | `string` | The value to assign to the attribute. |
+
+---
+
+### `getAttribute(key)` {#get-attribute}
+
+Returns the value of the attribute with the specified key.
+
+```typescript title="Example"
+// Create a new WFComponent instance for an link element
+const link = new WFComponent(`.mylink`);
+// Get the value of the attribute
+const hrefValue = input.getAttribute("href");
+console.log(hrefValue);
+```
+
+**Syntax**
+
+```typescript
+getAttribute(key:string) : string;
+```
+
+#### Parameters {#get-attribute-parameter}
+
+| Name  | Type     | Description                    |
+| ----- | -------- | ------------------------------ |
+| `key` | `string` | The attribute key to retrieve. |
+
+---
+
+### `hasAttribute(key)` {#has-attribute}
+
+Checks if the element has the attribute with the specified key.
+
+```typescript title="Example"
+// Create a new WFComponent instance for an input element
+const input = new WFComponent(`.myinput`);
+// Check if the attribute is present
+const isDisabled = input.hasAttribute("disabled");
+console.log(isDisabled);
+```
+
+**Syntax**
+
+```typescript
+hasAttribute(key:string) : boolean;
+```
+
+#### Parameters {#has-attribute-parameter}
+
+| Name  | Type     | Description                 |
+| ----- | -------- | --------------------------- |
+| `key` | `string` | The attribute key to check. |
+
+---
+
+### `removeAttribute(key)` {#remove-attribute}
+
+Removes the attribute with the given key from the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for an input element
+const input = new WFComponent(`.myinput`);
+// Remove the attribute
+input.removeAttribute("disabled");
+```
+
+**Syntax**
+
+```typescript
+removeAttribute(key:string) : void;
+```
+
+#### Parameters {#remove-attribute-parameter}
+
+| Name  | Type     | Description                  |
+| ----- | -------- | ---------------------------- |
+| `key` | `string` | The attribute key to remove. |
+
+---
+
+### `getChildAsComponent(selector)` {#get-child-component}
+
+Returns the first matched child element under the current parent element as a WFComponent instance.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a card component
+const card = new WFComponent(`.my-card`);
+// Create a new WFComponent instance for a link inside the card
+const cardLink = card.getChildAsComponent(`.my-link`);
+```
+
+**Syntax**
+
+```typescript
+getChildAsComponent<T>(selector:string) : WFComponent<T>;
+```
+
+#### Parameters {#get-child-component-parameter}
+
+| Name       | Type     | Description       |
+| ---------- | -------- | ----------------- |
+| `selector` | `string` | The CSS selector. |
+
+---
+
+### `getChildAsComponents(selector)` {#get-child-components}
+
+Returns an array of matched children elements under the current parent element as WFComponent instances.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a product listing element
+const productList = new WFComponent(`.product-listing`);
+// Create an array of WFComponent instances for all product cards inside the listing
+const productCards =
+  productList.getChildAsComponents(`.product-card`);
+productCards.forEach((productCard) => {
+  console.log(productCard);
+});
+```
+
+**Syntax**
+
+```typescript
+getChildAsComponents<T>(selector:string) : WFComponent<T>[];
+```
+
+#### Parameters {#get-child-components-parameter}
+
+| Name       | Type     | Description       |
+| ---------- | -------- | ----------------- |
+| `selector` | `string` | The CSS selector. |
+
+---
+
+### `getManyChildAsComponents(selector)` {#get-many-child-components}
+
+Returns matched children elements under the current parent element based on the provided object of selectors as WFComponent instances.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a product card
+const productCard = new WFComponent(`.product-card`);
+
+// Define an object with selectors for various child elements
+const selectors = {
+  img: ".product-img",
+  title: ".product-title",
+  price: ".product-price",
+};
+
+// Get the specified child elements within the product card
+const { img, title, price } =
+  productCard.getManyChildAsComponents(selectors);
+
+console.log(img, title, price);
+```
+
+**Syntax**
+
+```typescript
+getManyChildAsComponents(selector:{[key:string]:string}) : {[key:string]:WFComponent};
+```
+
+#### Parameters {#get-many-child-components-parameter}
+
+| Name       | Type     | Description                                                                                                 |
+| ---------- | -------- | ----------------------------------------------------------------------------------------------------------- |
+| `selector` | `Object` | An object containing key-value pairs for naming variables in the return and their associated CSS selectors. |
+
+---
+
+### `getCssClass()` {#get-css-class}
+
+Returns an array containing all the CSS classes present in the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a button
+const button = new WFComponent(`.btn`);
+const cssClasses = button.getCssClass();
+console.log(cssClasses); // Outputs: ["btn", "btn-primary", "small"]
+```
+
+**Syntax**
+
+```typescript
+getCssClass() : string[];
+```
+
+---
+
+### `addCssClass(className)` {#add-css-class}
+
+Adds the specified CSS class to the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a button
+const button = new WFComponent(`.btn`);
+// Append the CSS class
+button.addCssClass("btn-primary");
+const cssClasses = button.getCssClass();
+console.log(cssClasses); // Outputs: ["btn", "btn-primary"]
+```
+
+**Syntax**
+
+```typescript
+addCssClass(className:string):void;
+```
+
+#### Parameters {#add-css-class-parameter}
+
+| Name        | Type     | Description        |
+| ----------- | -------- | ------------------ |
+| `className` | `string` | The CSS class name |
+
+---
+
+### `replaceCssClass(oldClassName,newClassName)` {#replace-css-class}
+
+Replaces the old CSS class with the new CSS class on the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a button
+const button = new WFComponent(`.btn`);
+console.log(button.getCssClass()); // Outputs: ["btn", "btn-primary", "small"]
+
+// Replace the CSS class
+button.replaceCssClass("btn-primary", "btn-secondary");
+console.log(button.getCssClass()); // Outputs: ["btn", "btn-secondary", "small"]
+```
+
+**Syntax**
+
+```typescript
+replaceCssClass(oldClassName:string,newClassName:string):void;
+```
+
+#### Parameters {#replace-css-class-parameter}
+
+| Name           | Type     | Description                       |
+| -------------- | -------- | --------------------------------- |
+| `oldClassName` | `string` | The old CSS class name to replace |
+| `newClassName` | `string` | The new CSS class name to set     |
+
+---
+
+### `toggleCssClass(className)` {#toggle-css-class}
+
+Toggles the presence of the specified CSS class on the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for an accordion element
+const accordion = new WFComponent(`.accordion`);
+console.log(accordion.getCssClass()); // Outputs: ["accordion", "opened"]
+
+// Toggle the CSS class
+accordion.toggleCssClass("opened");
+console.log(accordion.getCssClass()); // Outputs: ["accordion"]
+
+accordion.toggleCssClass("opened");
+console.log(accordion.getCssClass()); // Outputs: ["accordion", "opened"]
+```
+
+**Syntax**
+
+```typescript
+toggleCssClass(className:string):void;
+```
+
+#### Parameters {#toggle-css-class-parameter}
+
+| Name        | Type     | Description                  |
+| ----------- | -------- | ---------------------------- |
+| `className` | `string` | The CSS class name to toggle |
+
+---
+
+### `removeCssClass(className)` {#remove-css-class}
+
+Removes the specified CSS class from the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a dialog element
+const dialog = new WFComponent(`.dialog`);
+console.log(dialog.getCssClass()); // Outputs: ["dialog", "opened"]
+
+// Remove the CSS class
+dialog.removeCssClass("opened");
+console.log(dialog.getCssClass()); // Outputs: ["dialog"]
+```
+
+**Syntax**
+
+```typescript
+removeCssClass(className:string):void;
+```
+
+#### Parameters {#remove-css-class-parameter}
+
+| Name        | Type     | Description                  |
+| ----------- | -------- | ---------------------------- |
+| `className` | `string` | The CSS class name to remove |
+
+---
+
+### `setStyle(style)` {#set-style}
+
+Updates the element's style by applying the provided style object.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a accordion element
+const accordion = new WFComponent(`.accordion`);
+accordion.setStyle({
+  height: "300px",
+  //You can use variables as well
+  "--my-variable": "10px",
+});
+```
+
+**Syntax**
+
+```typescript
+setStyle(style:styleProperties):void;
+```
+
+#### Parameters {#remove-css-class-parameter}
+
+| Name    | Type     | Description                                             |
+| ------- | -------- | ------------------------------------------------------- |
+| `style` | `Object` | An object containing CSS styles or valid CSS variables. |
+
+---
+
+### `getStyle()` {#get-style}
+
+Returns the style object associated with the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for an accordion element
+const accordion = new WFComponent(`.accordion`);
+accordion.setStyle({
+  height: "300px",
+  "--my-variable": "10px",
+});
+
+// Retrieve the style object for the accordion element
+const accordionStyle = accordion.getStyle();
+
+// Output the style object to the console
+console.log(accordionStyle); // Outputs: {..., height: "300px", "--my-variable": "10px", ...}
+```
+
+**Syntax**
+
+```typescript
+getStyle():styleProperties;
+```
+
+---
+
+### `on(eventType, fn)` {#on-listener}
+
+Attaches an event listener to the element, listening for events such as 'click,' 'change,' or 'blur.'
+
+```typescript title="Example"
+// Create a new WFComponent instance for a button element
+const button = new WFComponent(`.button`);
+
+// Define a click event handler function
+const onClick = () => {
+  console.log("Button clicked");
+};
+
+// Attach the click event listener to the button
+button.on("click", onClick);
+
+// Create a new WFComponent instance for an input element
+const input = new WFComponent(`.my-input`);
+
+// Define a change event handler function
+const onChange = () => {
+  console.log("Input text changed", input.getAttribute("value"));
+};
+
+// Attach the change event listener to the input
+input.on("change", onChange);
+```
+
+**Syntax**
+
+```typescript
+on(eventType:string,(event:Event)=>void):void;
+```
+
+#### Parameters {#remove-css-class-parameter}
+
+| Name        | Type              | Description                                                                                                               |
+| ----------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `eventType` | `string`          | A case-sensitive string representing the [event type](https://developer.mozilla.org/en-US/docs/Web/Events) to listen for. |
+| `fn`        | `function(event)` | A callback function that is executed when the specified event type is triggered.                                          |
+
+---
+
+### `off(eventType, fn)` {#off-listener}
+
+Detaches an event listener from the current element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a button element
+const button = new WFComponent(`.button`);
+
+// Define a click event handler function
+const onClick = () => {
+  console.log("Button clicked");
+};
+
+// Attach the click event listener to the button
+button.on("click", onClick);
+
+// Later, detach the click event listener
+button.off("click", onClick);
+```
+
+**Syntax**
+
+```typescript
+off(eventType:string,(event:Event)=>void):void;
+```
+
+#### Parameters {#remove-css-class-parameter}
+
+| Name        | Type              | Description                                                                                                           |
+| ----------- | ----------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `eventType` | `string`          | A case-sensitive string representing the [event type](https://developer.mozilla.org/en-US/docs/Web/Events) to detach. |
+| `fn`        | `function(event)` | The callback function that was previously attached and should be detached from the specified event type.              |
+
+---
+
+### `getText()` {#get-text}
+
+Returns the text content of the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a heading element
+const heading = new WFComponent(`.my-heading`);
+
+// Get the text content of the heading
+const textContent = heading.getText();
+console.log(textContent); // Outputs: "Welcome to xAtom!"
+```
+
+**Syntax**
+
+```typescript
+getText():string;
+```
+
+---
+
+### `setText(text)` {#set-text}
+
+Updates the inner text of the element with the provided text.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a paragraph element
+const paragraph = new WFComponent(`.my-paragraph`);
+
+// Update the inner text of the paragraph
+paragraph.setText("Hello, xAtom!");
+
+// Get the updated text
+const updatedText = paragraph.getText();
+console.log(updatedText); // Outputs: "Hello, xAtom!"
+```
+
+**Syntax**
+
+```typescript
+setText(text:string):void;
+```
+
+#### Parameters {#set-text-parameters}
+
+| Name   | Type     | Description                        |
+| ------ | -------- | ---------------------------------- |
+| `text` | `string` | The text to set as the inner text. |
+
+---
+
+### `getTextContent()` {#get-text-content}
+
+Returns the text content of the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a span element
+const span = new WFComponent(`.my-span`);
+
+// Get the text content of the span
+const spanTextContent = span.getTextContent();
+console.log(spanTextContent); // Outputs: "Click me!"
+```
+
+**Syntax**
+
+```typescript
+getTextContent():string;
+```
+
+---
+
+### `setTextContent(text)` {#set-text-content}
+
+Updates the text content of the element with the provided text.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a div element
+const div = new WFComponent(`.my-div`);
+
+// Update the text content of the div
+div.setTextContent("This is some dynamic content.");
+
+// Get the updated text content
+const updatedTextContent = div.getTextContent();
+console.log(updatedTextContent); // Outputs: "This is some dynamic content."
+```
+
+**Syntax**
+
+```typescript
+setTextContent(text:string):void;
+```
+
+#### Parameters {#set-text-content-parameters}
+
+| Name   | Type     | Description                               |
+| ------ | -------- | ----------------------------------------- |
+| `text` | `string` | The text to set as the element's content. |
+
+---
+
+### `updateTextViaAttrVar(keyPair)` {#update-text-var}
+
+Enhance your web app's dynamism by updating text content based on configured xa-var attributes. This method checks for xa-var attributes on the element or its child elements and updates text accordingly using key-value pairs.
+
+```typescript title="Example"
+/**
+ * Example Product Card HTML structure:
+ * <div class="product-card">
+ *   <div class="img-container"><img src="..." /></div>
+ *   <h4 xa-var="title">Example title<h4>
+ *   <p xa-var="description">Example description<p>
+ *   <p xa-var="price">$0<p>
+ *   <button ...>Add to cart</button>
+ * </div>
+ */
+
+// Create a new WFComponent instance for a div element
+const productCard = new WFComponent(`.product-card`);
+
+// Update text content with key-value pairs
+productCard.updateTextViaAttrVar({
+  title: "Iced Americano",
+  description: "Bold and bitter coffee drink!",
+  price: "$5.00",
+});
+
+/**
+ * After text update, the Product Card will look like this:
+ * <div class="product-card">
+ *   <div class="img-container"><img src="..." /></div>
+ *   <h4 xa-var="title">Iced Americano<h4>
+ *   <p xa-var="description">Bold and bitter coffee drink!<p>
+ *   <p xa-var="price">$5.00<p>
+ *   <button ...>Add to cart</button>
+ * </div>
+ */
+```
+
+#### TODO: Webflow Screenshot
+
+**Syntax**
+
+```typescript
+updateTextViaAttrVar(keyPair:{[key:string]:string}):void;
+```
+
+#### Parameters {#update-text-var-parameters}
+
+| Name      | Type     | Description                                                        |
+| --------- | -------- | ------------------------------------------------------------------ |
+| `keyPair` | `Object` | An object containing variable names as keys and strings as values. |
+
+---
+
+### `getHTML()` {#get-html}
+
+Returns the HTML content of the element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a section element
+const section = new WFComponent(`.my-section`);
+
+// Get the HTML content of the section
+const sectionHTML = section.getHTML();
+console.log(sectionHTML); // Outputs: "<div class="content">...</div>"
+```
+
+**Syntax**
+
+```typescript
+getHTML():string;
+```
+
+---
+
+### `setHTML(htmlString)` {#set-html}
+
+Updates the inner HTML content of the element with the provided HTML string.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a div element
+const div = new WFComponent(`.my-div`);
+
+// Update the inner HTML content of the div
+div.setHTML("<p>This is <strong>bold</strong> text.</p>");
+
+// Get the updated HTML content
+const updatedHTML = div.getHTML();
+console.log(updatedHTML); // Outputs: "<p>This is <strong>bold</strong> text.</p>"
+```
+
+**Syntax**
+
+```typescript
+setHTML(htmlString:string):void;
+```
+
+#### Parameters {#set-html-parameters}
+
+| Name         | Type     | Description                           |
+| ------------ | -------- | ------------------------------------- |
+| `htmlString` | `string` | The HTML string to set as inner HTML. |
+
+---
+
+### `getCloneAsComponent()` {#get-clone-as-component}
+
+Returns a clone of the current WFComponent as a new component instance.
+
+```typescript title="Example"
+// Create a new WFComponent instance for an element
+const originalComponent = new WFComponent(`.my-element`);
+
+// Clone the component
+const clonedComponent = originalComponent.getCloneAsComponent();
+```
+
+**Syntax**
+
+```typescript
+getCloneAsComponent():WFComponent<T>;
+```
+
+---
+
+### `appendChild(child)` {#append-child}
+
+Appends the specified `WFComponent` child element to the current element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a parent element
+const parent = new WFComponent(`.parent`);
+
+// Create a new child WFComponent element and clone child
+const child = new WFComponent(`.child`).getCloneAsComponent();
+
+// Append the child WFComponent element to the parent
+parent.appendChild(child);
+```
+
+**Syntax**
+
+```typescript
+appendChild(child:WFComponent):void;
+```
+
+#### Parameters {#append-child-parameters}
+
+| Name    | Type          | Description                                |
+| ------- | ------------- | ------------------------------------------ |
+| `child` | `WFComponent` | The `WFComponent` child element to append. |
+
+---
+
+### `removeAllChildren()` {#remove-all-children}
+
+Removes all children elements from the current element.
+
+```typescript title="Example"
+// Create a new WFComponent instance for a parent element
+const parent = new WFComponent(`.parent`);
+
+// Remove all children elements from the parent
+parent.removeAllChildren();
+```
+
+**Syntax**
+
+```typescript
+removeAllChildren():void;
+```
+
+---
+
+### `remove()` {#remove-element}
+
+Removes the element from the DOM.
+
+```typescript title="Example"
+// Create a new WFComponent instance for an element
+const element = new WFComponent(`.my-element`);
+
+// Remove the element from the DOM
+element.remove();
+```
+
+**Syntax**
+
+```typescript
+remove():void;
+```
+
+
+================================================
+File: guide/reference/components/WFDynamicList.mdx
+================================================
+The `WFDynamicList` class is a powerful component within the xAtom framework that enables you to create dynamic lists seamlessly. Whether your application is fetching data from a REST API, GraphQL, or any other API source, the `WFDynamicList` provides essential functionality to render lists with ease. This class not only handles loading and empty states out of the box but also gives you full control over how your list items are rendered.
+
+## Getting Started
+
+#### Basic List structure
+
+To effectively use the WFDynamicList component within the xAtom framework, ensure that your list component is structured as follows in Webflow:
+
+```bash
+div (my-list)
+├── div (my-list-item)
+├── div (my-list-loader)
+└── div (my-list-empty-state)
+```
+
+This structure is essential for the proper functioning of the WFDynamicList component. Make sure that your webflow elements match this hierarchy to seamlessly integrate dynamic lists into your web applicatio
+
+#### Initialization
+
+To get started with the `WFDynamicList` class, you'll need to initialize it and provide the necessary configuration options. Here's a step-by-step guide on how to begin:
+
+```typescript title="Example"
+import { WFDynamicList } from "@xatom/core";
+
+// Initialize a new instance of WFDynamicList
+const list = new WFDynamicList<string>(".my-list", {
+  rowSelector: ".my-list-item", // CSS selector for list items
+  loaderSelector: ".my-list-loader", // Optional CSS selector for loading state
+  emptySelector: ".my-list-empty-state", // Optional selector for empty state
+});
+
+// Customize the rendering of list items
+list.rowRenderer(({ rowData, rowElement }) => {
+  // Modify the rowElement component as needed
+  return rowElement;
+});
+
+// Set the data to be displayed in the dynamic list
+list.setData(["Item 1", "Item 2"]);
+```
+
+In this example:
+
+- We create a new instance of `WFDynamicList` by providing a query selector (`.my-list`) that matches the container element where you want to render the list.
+- We configure the list by specifying the `rowSelector`, which is a query selector that identifies individual list items within the dynamic list.
+- Optionally, we specify the `loaderSelector` and `emptySelector`, which are query selectors for loading and empty state elements. These selectors are used to display loading and empty states when necessary.
+- We define a `rowRenderer` function that allows you to customize the rendering of list items based on the provided data.
+- Finally, we set the data for the dynamic list using the `setData` method.
+
+With these steps, you're ready to create dynamic lists in your web application using the `WFDynamicList` class. You can now proceed to customize and further enhance your dynamic lists according to your project's requirements.
+
+**Syntax**
+
+```typescript
+new WFDynamicList(selector, configuration);
+```
+
+> #### Note
+>
+> **Compatibility with `WFComponent`**
+>
+> The `WFDynamicList` seamlessly extends the capabilities of the `WFComponent` class. This means that all the properties and methods available in `WFComponent` are fully compatible and can be used with `WFDynamicList`. This compatibility provides you with a wide range of options for enhancing and customizing the behavior of your dynamic lists. Feel free to leverage the power of both components to achieve your desired results efficiently.
+
+## Selector Parameter
+
+The selector parameter within `WFDynamicList` is versatile and can accept one of the following types:
+
+- A string that precisely matches a valid CSS selector.
+- An HTMLElement representing a specific element in the document.
+- An existing `WFComponent` instance.
+
+## Configuration Object
+
+Along with selector parameter you'll need to provide a configuration object that includes the following properties:
+
+| Property         | Accepted Types                                                 | Required |
+| ---------------- | -------------------------------------------------------------- | -------- |
+| `rowSelector`    | A string matching a valid CSS selector, e.g., `".list-item"`   | Required |
+|                  | An HTMLElement representing a specific element in the document |          |
+|                  | An existing `WFComponent` instance                             |          |
+| `loaderSelector` | A string matching a valid CSS selector, e.g., `".loader"`      | Optional |
+|                  | An HTMLElement representing a specific element in the document |          |
+|                  | An existing `WFComponent` instance                             |          |
+| `emptySelector`  | A string matching a valid CSS selector, e.g., `".empty-state"` | Optional |
+|                  | An HTMLElement representing a specific element in the document |          |
+|                  | An existing `WFComponent` instance                             |          |
+
+By using these selectors, you can configure the `WFDynamicList` class to interact with your web page's structure, customize how list items are selected, and control the display of loading and empty states. The flexibility to accept different types of selectors makes the `WFDynamicList` class adaptable to various web application scenarios.
+
+## Methods
+
+### `rowRenderer(fn)`
+
+This method allows you to customize the rendering of list items by providing a callback function. The callback function receives an object `params` with `rowData`, representing the data for the current list item; `rowElement`, representing a copy of the row component; `data`, the array which was set using `setData`; and `index`, the index of the currently rendering item. You can modify the `rowElement` and return it to control how list items are rendered.
+
+```typescript title="Example"
+// Initialize a new instance of WFDynamicList
+const list = new WFDynamicList<string>(".my-list", {
+  rowSelector: ".my-list-item", // CSS selector for list items
+  loaderSelector: ".my-list-loader", // Optional CSS selector for loading state
+  emptySelector: ".my-list-empty-state", // Optional selector for empty state
+});
+
+// Customize the rendering of list items
+list.rowRenderer(({ rowData, rowElement }) => {
+  // Access a child component within the list item
+  const removeBtn =
+    rowElement.getChildAsComponent(".remove-btn");
+
+  // Add a click event listener to the remove button
+  removeBtn.on("click", () => {
+    console.log("removeBtn clicked");
+  });
+
+  // Update the text of a heading element within the list item
+  rowElement.updateTextViaAttrVar({
+    title: rowData.title, // Assuming rowData contains a 'title' property
+  });
+
+  // Return the modified rowElement component
+  return rowElement;
+});
+
+// Set the data to be displayed in the dynamic list
+list.setData(["Item 1", "Item 2"]);
+```
+
+#### Syntax
+
+```typescript
+rowRenderer(
+  fn: (
+    params: {
+      rowData: any;
+      rowElement: WFComponent;
+      data: any[];
+      index: number
+       }
+    ) => WFComponent
+  ): void
+```
+
+#### Parameters {#row-renderer-parameter}
+
+| Name | Type       | Description                                                                            |
+| ---- | ---------- | -------------------------------------------------------------------------------------- |
+| `fn` | `function` | A callback function that receives parameters to customize the rendering of list items. |
+
+#### Callback Function Parameters {#row-renderer-fn-parameter}
+
+| Name         | Type             | Description                                            |
+| ------------ | ---------------- | ------------------------------------------------------ |
+| `rowData`    | `T`              | The data object representing the current list item.    |
+| `rowElement` | `WFComponent<R>` | A copy of the row component for customization.         |
+| `data`       | `Array<T>`       | The array of data items set using `setData`.           |
+| `index`      | `number`         | The index of the currently rendering item in the list. |
+
+This method empowers you to have precise control over the rendering of list items, enabling you to create a tailored and dynamic user interface for your application's list components.
+
+---
+
+### `setData(data)`
+
+Use this method to set the data for the dynamic list. You need to pass an array `data` containing the list items. The `data` array can consist of objects, strings, numbers, or any other valid data types that represent the content of the list.
+
+```typescript title="Example"
+// Initialize a new instance of WFDynamicList
+const list = new WFDynamicList<string>(".my-list", {
+  rowSelector: ".my-list-item", // CSS selector for list items
+  loaderSelector: ".my-list-loader", // Optional CSS selector for loading state
+  emptySelector: ".my-list-empty-state", // Optional selector for empty state
+});
+
+// Customize the rendering of list items
+list.rowRenderer(({ rowData, rowElement }) => {
+  // Return the modified rowElement component
+  return rowElement;
+});
+
+// Set the data to be displayed in the dynamic list
+list.setData(["Item 1", "Item 2"]);
+```
+
+#### Syntax
+
+```typescript
+setData(data:T[]):void
+```
+
+#### Parameters {#set-data-parameter}
+
+| Name   | Type  | Description                                                                                                                      |
+| ------ | ----- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `data` | `T[]` | The `data` array can consist of objects, strings, numbers, or any other valid data types that represent the content of the list. |
+
+This method allows you to update the dynamic list with new data, making it easy to refresh the list with updated or different content as needed.
+
+---
+
+### `loaderRenderer(fn)`
+
+This method takes a callback function to control the rendering of the loading state. When invoked, the function should return an `WFComponent` instance representing the loading state of the dynamic list.
+
+```typescript title="Example"
+// Initialize a new instance of WFDynamicList
+const list = new WFDynamicList<string>(".my-list", {
+  rowSelector: ".my-list-item", // CSS selector for list items
+  loaderSelector: ".my-list-loader", // Optional CSS selector for loading state
+  emptySelector: ".my-list-empty-state", // Optional selector for empty state
+});
+
+// Customize the rendering of list items
+list.rowRenderer(({ rowData, rowElement }) => {
+  // Return the modified rowElement component
+  return rowElement;
+});
+
+// Customize the rendering of loader
+list.loaderRenderer((loader) => {
+  // Customize the loader component as needed
+  const loadingText =
+    loader.getChildAsComponent(".loading-text");
+  loadingText.setText("Please wait..."); // Update loading text
+  loader.setStyle({
+    backgroundColor: "#fff", // Change background color
+  });
+
+  // Return the modified loader component
+  return loader;
+});
+
+// Set the data to be displayed in the dynamic list
+list.setData(["Item 1", "Item 2"]);
+```
+
+#### Syntax
+
+```typescript
+loaderRenderer(fn: (loaderElement:WFComponent) => WFComponent): void
+```
+
+#### Parameters {#loader-parameter}
+
+| Name | Type       | Description                                                                        |
+| ---- | ---------- | ---------------------------------------------------------------------------------- |
+| `fn` | `function` | A callback function that receives parameters to customize the rendering of loader. |
+
+#### Callback Function Parameters {#loader-fn-parameter}
+
+| Name            | Type             | Description                                       |
+| --------------- | ---------------- | ------------------------------------------------- |
+| `loaderElement` | `WFComponent<L>` | A copy of the loader component for customization. |
+
+This method allows you to customize the appearance and behavior of the loading state in the dynamic list, giving you full control over how it's presented to users.
+
+---
+
+### `changeLoadingStatus(status)`
+
+The `changeLoadingStatus` method allows you to change the loading status of the dynamic list by passing a boolean value `status`. If the list contains items and the loading status is set to `true`, a loader will be displayed at the bottom of the list.
+
+```typescript title="Example"
+// Initialize a new instance of WFDynamicList
+const list = new WFDynamicList<string>(".my-list", {
+  rowSelector: ".my-list-item", // CSS selector for list items
+  loaderSelector: ".my-list-loader", // Optional CSS selector for loading state
+  emptySelector: ".my-list-empty-state", // Optional selector for empty state
+});
+
+const loadMoreBtn = new WFComponent(".load-more-btn");
+
+// Customize the rendering of list items
+list.rowRenderer(({ rowData, rowElement }) => {
+  // Return the modified rowElement component
+  return rowElement;
+});
+
+loadMoreBtn.on("click", () => {
+  // Enable the loading state
+  list.changeLoadingStatus(true);
+  // Perform additional actions here (e.g., fetching more data)
+
+  // Disable the loading state
+  list.changeLoadingStatus(false);
+});
+
+// Set the data to be displayed in the dynamic list
+list.setData(["Item 1", "Item 2"]);
+```
+
+#### Syntax
+
+```typescript
+changeLoadingStatus(status: boolean): void
+```
+
+#### Parameters {#loading-parameter}
+
+| Name     | Type      | Description                |
+| -------- | --------- | -------------------------- |
+| `status` | `boolean` | Indicate the loading state |
+
+This method provides control over when and how the loading state is displayed in the dynamic list, giving you the flexibility to manage the loading behavior according to your application's requirements.
+
+---
+
+### `emptyRenderer(fn)`
+
+This method enables you to customize the rendering of the empty state of the dynamic list. It takes a callback function that should return an `WFComponent` representing the empty state when invoked. The empty state will automatically render when the list is empty.
+
+```typescript title="Example"
+// Initialize a new instance of WFDynamicList
+const list = new WFDynamicList<string>(".my-list", {
+  rowSelector: ".my-list-item", // CSS selector for list items
+  loaderSelector: ".my-list-loader", // Optional CSS selector for loading state
+  emptySelector: ".my-list-empty-state", // Optional selector for empty state
+});
+
+// Customize the rendering of list items
+list.rowRenderer(({ rowData, rowElement }) => {
+  // Return the modified rowElement component
+  return rowElement;
+});
+
+// Customize the rendering of empty state
+list.emptyRenderer((emptyStateElement) => {
+  // Customize the empty state component as needed
+  const emptyText =
+    emptyStateElement.getChildAsComponent(".empty-text");
+  emptyText.setText(
+    isSearchResult ? "No Item Found" : "Looks like list is empty"
+  ); // Update empty state text
+
+  // Return the modified empty state component
+  return emptyStateElement;
+});
+
+// Set the data to be displayed in the dynamic list
+list.setData(["Item 1", "Item 2"]);
+```
+
+#### Syntax
+
+```typescript
+emptyRenderer(fn: (emptyStateElement:WFComponent) => WFComponent): void
+```
+
+#### Parameters {#empty-parameter}
+
+| Name | Type       | Description                                                                             |
+| ---- | ---------- | --------------------------------------------------------------------------------------- |
+| `fn` | `function` | A callback function that receives parameters to customize the rendering of empty state. |
+
+#### Callback Function Parameters {#empty-fn-parameter}
+
+| Name                | Type             | Description                                            |
+| ------------------- | ---------------- | ------------------------------------------------------ |
+| `emptyStateElement` | `WFComponent<L>` | A copy of the empty state component for customization. |
+
+This method allows you to have complete control over how the empty state of the dynamic list is displayed. You can design and customize the empty state component to provide a meaningful and engaging user experience when the list is empty.
+
+---
+
+### `forceRender()`
+
+Use the `forceRender` method to forcefully re-render the dynamic list. This method is particularly useful when you want to refresh the list display after making changes using `setData` or other methods.
+
+```typescript title="Example"
+// Initialize a new instance of WFDynamicList
+const list = new WFDynamicList<string>(".my-list", {
+  rowSelector: ".my-list-item", // CSS selector for list items
+  loaderSelector: ".my-list-loader", // Optional CSS selector for loading state
+  emptySelector: ".my-list-empty-state", // Optional selector for empty state
+});
+
+// Customize the rendering of list items
+list.rowRenderer(({ rowData, rowElement }) => {
+  // Return the modified rowElement component
+  return rowElement;
+});
+
+// Set the data to be displayed in the dynamic list
+list.setData(["Item 1", "Item 2"]);
+
+// Trigger a force render to refresh the list
+list.forceRender();
+```
+
+#### Syntax
+
+```typescript
+forceRender(): void
+```
+
+These methods provide you with the flexibility to control the rendering of list items, loading states, and empty states, ensuring a seamless and customized user experience when working with dynamic lists in your web application.
+
+
+================================================
+File: guide/reference/components/WFFormComponent.mdx
+================================================
+The `WFFormComponent` is a powerful component within the xAtom framework that empowers you to intercept Webflow forms and extend their functionalities. With this component, you can perform custom validations, build complex flows, and seamlessly submit form data to your preferred API services, such as REST APIs, GraphQL, or any other web-based APIs. The `WFFormComponent` gives you complete control over form success and error states, making it an invaluable tool for enhancing and customizing your web forms.
+
+Here's a closer look at the key features and capabilities of the `WFFormComponent`:
+
+- **Form Interception**: Intercept Webflow forms to add custom logic and validation before submission.
+
+- **Extensible Functionality**: Extend the functionality of your web forms by integrating complex operations and custom business logic.
+
+- **API Integration**: Easily submit form data to your preferred API services, including REST APIs, GraphQL, and more.
+
+- **Total Control**: Gain complete control over the form's success and error states, allowing you to tailor the user experience to your specific needs.
+
+With the `WFFormComponent`, you can take your web forms to the next level, providing enhanced user experiences and seamless integration with your backend services. Whether you need to validate user input, perform advanced operations on form data, or communicate with external APIs, this component empowers you to do so efficiently and effectively.
+
+## Getting Started
+
+**Initialization**: To begin using the `WFFormComponent` class, you should initialize it with a query selector. Here's a step-by-step guide on how to get started:
+
+```typescript title="Example"
+import { WFFormComponent } from "@xatom/core";
+
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // Input with name="fullname"
+  email: string; // Input with name="email"
+}>(".my-form");
+
+// Set form data
+myForm.setFromData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+
+// Get form data
+const formData = myForm.getFormData();
+console.log(formData); // { fullname: "John Doe", email: "john@doe.com" }
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  console.log(data); // { fullname: "John Doe", email: "john@doe.com" }
+});
+```
+
+In this example:
+
+- We create a new instance of `WFFormComponent` by providing a query selector (`.my-form`) that matches the form element you want to work with.
+- We set form data using the `setFromData` method, allowing you to populate form fields with initial data.
+- You can retrieve form data using the `getFormData` method, which returns an object containing the current values of form fields.
+- Finally, we intercept the webflow form submission using the `onFormSubmit` method, which allows you to execute custom logic and prevent the default form submission if needed.
+
+With these steps, you can effectively utilize the `WFFormComponent` to extend the functionality of webflow forms, including custom validation, complex functions, and data submission to your preferred APIs.
+
+**Syntax**
+
+```typescript
+new WFFormComponent(selector);
+```
+
+> #### Note
+>
+> **Compatibility with `WFComponent`**
+>
+> The `WFFormComponent` seamlessly extends the capabilities of the `WFComponent` class. This means that all the properties and methods available in `WFComponent` are fully compatible and can be used with `WFFormComponent`. This compatibility provides you with a wide range of options for enhancing and customizing the behavior of your form. Feel free to leverage the power of both components to achieve your desired results efficiently.
+
+## Selector Parameter
+
+The `selector` parameter within `WFFormComponent` is versatile and can accept one of the following types:
+
+- A string that precisely matches a valid CSS selector.
+- An HTMLElement representing a specific element in the document.
+- An existing `WFComponent` instance.
+
+## Methods
+
+### `getFormData()`
+
+This method allows you to retrieve all form data as an object.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Get form data
+const formData = myForm.getFormData();
+console.log(formData); // { fullname: "John Doe", email: "john@doe.com" }
+```
+
+#### Syntax
+
+```typescript
+getFormData(): { [key: string]: string | File | File[] }
+```
+
+---
+
+### `setFromData(fromData)`
+
+This method allows you to set form data, automatically populating input values.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Set form data
+myForm.setFromData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+
+// Get form data
+const formData = myForm.getFormData();
+console.log(formData); // { fullname: "John Doe", email: "john@doe.com" }
+```
+
+#### Syntax
+
+```typescript
+setFromData(formData: { [key: string]: string | File | File[] }): void
+```
+
+#### Parameters {#set-form-data-parameter}
+
+| Name       | Type                                                         | Description                         |
+| ---------- | ------------------------------------------------------------ | ----------------------------------- |
+| `fromData` | <code>{[key:string]:string &#124; File &#124; File[]}</code> | form data object to set from values |
+
+---
+
+### `onFormSubmit(fn)`
+
+This method allows you to intercept webflow form submissions and prevent the form submission.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  console.log(data); // { fullname: "John Doe", email: "john@doe.com" }
+});
+```
+
+#### Syntax
+
+```typescript
+onFormSubmit(
+  fn: (
+    data: { [key: string]: string | File | File[] },
+    event: SubmitEvent
+  ) => void
+): void
+```
+
+#### Parameters {#on-form-submit-parameter}
+
+| Name | Type       | Description         |
+| ---- | ---------- | ------------------- |
+| `fn` | `function` | A callback function |
+
+#### Callback Function Parameters {#on-form-submit-fn-parameter}
+
+| Name    | Type                                                         | Description  |
+| ------- | ------------------------------------------------------------ | ------------ |
+| `data`  | <code>{[key:string]:string &#124; File &#124; File[]}</code> | Form data    |
+| `event` | `SubmitEvent`                                                | Submit event |
+
+---
+
+### `submitWebflowForm()`
+
+This method submits the webflow form programmatically.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (!emailExists) {
+        // If email does not exist on the server, submit the webflow form programmatically
+        myForm.submitWebflowForm();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log(
+          "Email already exists. Please use a different email."
+        );
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+submitWebflowForm(): void
+```
+
+---
+
+### `getFormComponent()`
+
+This method returns the HTML form element as a `WFComponent<HTMLFormElement>`.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Get the form component
+const formComponent = myForm.getFormComponent();
+```
+
+#### Syntax
+
+```typescript
+getFormComponent(): WFComponent<HTMLFormElement>
+```
+
+---
+
+### `getSuccessComponent()`
+
+This method returns the success element as a `WFComponent<HTMLDivElement>`.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Get the sucess component
+const successComponent = myForm.getSuccessComponent();
+successComponent.updateTextViaAttrVar({
+  message: "Form was successfully submitted",
+});
+```
+
+#### Syntax
+
+```typescript
+getSuccessComponent(): WFComponent<HTMLDivElement>
+```
+
+---
+
+### `getErrorComponent()`
+
+This method returns the error element as a `WFComponent<HTMLDivElement>`.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Get the error component
+const errorComponent = myForm.getErrorComponent();
+if (invalidEmail)
+  errorComponent.updateTextViaAttrVar({
+    message: "Please enter a valid email",
+  });
+
+if (serverError)
+  errorComponent.updateTextViaAttrVar({
+    message: serverErrorMessage,
+  });
+```
+
+#### Syntax
+
+```typescript
+getErrorComponent(): WFComponent<HTMLDivElement>
+```
+
+---
+
+### `showSuccessState()`
+
+This method hides the form and shows the success element.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (emailExists) {
+        // If email does exist on the server, show success state
+        // highlight-next-line
+        myForm.showSuccessState();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log("Email was not found.");
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+showSuccessState(): void
+```
+
+---
+
+### `showErrorState()`
+
+This method shows the error element, displays the form element, and hides the success element.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (emailExists) {
+        // If email does exist on the server, show success state
+        myForm.showSuccessState();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log("Email was not found.");
+        // If email does not exist on the server, show error state
+        // highlight-next-line
+        myForm.showErrorState();
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+showErrorState(): void
+```
+
+---
+
+### `showForm()`
+
+This method shows the form element, hides the error element, and hides the success element.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (emailExists) {
+        // If email does exist on the server, show success state
+        myForm.showSuccessState();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log("Email was not found.");
+        // If email does not exist on the server, show error state
+        myForm.showErrorState();
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    })
+    .finally(() => {
+      setTimeout(() => {
+        // Show form, hides the error state and success state
+        // highlight-next-line
+        myForm.showForm();
+      }, 3000); // After 3 seconds
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+showForm(): void
+```
+
+---
+
+### `disableForm()`
+
+This method disables the form by disabling all inputs, preventing users from changing input values.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  // highlight-next-line
+  myForm.disableForm();
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (emailExists) {
+        // If email does exist on the server, show success state
+        myForm.showSuccessState();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log("Email was not found.");
+        // If email does not exist on the server, show error state
+        myForm.showErrorState();
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+disableForm(): void
+```
+
+---
+
+### `enableForm()`
+
+This method enables the form by enabling all inputs, allowing users to interact with input elements.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  myForm.disableForm();
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (emailExists) {
+        // If email does exist on the server, show success state
+        myForm.showSuccessState();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log("Email was not found.");
+        // If email does not exist on the server, show error state
+        myForm.showErrorState();
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    })
+    .finally(() => {
+      // highlight-next-line
+      myForm.enableForm();
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+enableForm(): void
+```
+
+---
+
+### `resetForm()`
+
+This method resets the form, clearing all input values.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  myForm.disableForm();
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (emailExists) {
+        // If email does exist on the server, show success state
+        myForm.showSuccessState();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log("Email was not found.");
+        // If email does not exist on the server, show error state
+        myForm.showErrorState();
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    })
+    .finally(() => {
+      // highlight-next-line
+      myForm.resetForm();
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+resetForm(): WFComponent
+```
+
+---
+
+### `getSubmitButton()`
+
+This method returns the form's submit button if present.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  // highlight-next-line
+  myForm.getSubmitButton().setAttribute("disabled", "disabled");
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (emailExists) {
+        // If email does exist on the server, show success state
+        myForm.showSuccessState();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log("Email was not found.");
+        // If email does not exist on the server, show error state
+        myForm.showErrorState();
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+getSubmitButton(): WFComponent
+```
+
+---
+
+### `updateSubmitButtonText(text)`
+
+This method allows you to update the text of the form's submit button. This can be useful in cases where you need to change the text dynamically, such as displaying "Please Wait" during form submission.
+
+```typescript title="Example"
+// Initialize a new instance of WFFormComponent
+const myForm = new WFFormComponent<{
+  fullname: string; // input name="fullname"
+  email: string; // input name="email"
+}>(".my-form");
+
+// Intercept webflow form submission and prevent it
+myForm.onFormSubmit((data) => {
+  // highlight-next-line
+  myForm.updateSubmitButtonText("Please Wait...");
+  // Simulate API call to validate email
+  validateEmailOnServer(data.email)
+    .then((emailExists) => {
+      if (emailExists) {
+        // If email does exist on the server, show success state
+        myForm.showSuccessState();
+      } else {
+        // Handle case where email already exists (e.g., show error message)
+        console.log("Email was not found.");
+        // If email does not exist on the server, show error state
+        myForm.showErrorState();
+      }
+    })
+    .catch((error) => {
+      // Handle API call error
+      console.error("API call failed:", error);
+    })
+    .finally(() => {
+      // highlight-next-line
+      myForm.updateSubmitButtonText("Submit");
+    });
+});
+```
+
+#### Syntax
+
+```typescript
+updateSubmitButtonText(text:string): void
+```
+
+#### Parameters {#update-submit-button-text-parameter}
+
+| Name   | Type     | Description                       |
+| ------ | -------- | --------------------------------- |
+| `text` | `string` | Text to set on the submit button. |
+
+
+================================================
+File: guide/reference/components/WFImage.mdx
+================================================
+# WFImage 🆕
+
+```mdx-code-block
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+```
+
+The `WFImage` class allows you to manage image properties, including responsive image sets, and listen for when an image has been loaded.
+
+## Getting Started
+
+**Initialization**: To begin using the `WFImage` class in your xAtom project, you'll first need to install the `@xatom/image` package. After installation, you can initialize `WFImage` following the example below:
+
+### Installing the package
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npm install @xatom/image
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn add @xatom/image
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm add @xatom/image
+```
+
+</TabItem>
+</Tabs>
+
+```typescript title="Example"
+import { WFImage } from "@xatom/image";
+import { onReady } from "@xatom/core";
+
+// Wait until the webflow page has been loaded
+onReady(() => {
+  // Initialize WFImage
+  const img = new WFImage(".img");
+
+  // Listen for when the image has been loaded
+  img.onLoad(() => {
+    console.log("Image is loaded");
+  });
+
+  // Set the image source
+  img.setImage("https://picsum.photos/id/237/200/300");
+
+  // Initialize another WFImage
+  const anotherImg = new WFImage(".other-img");
+
+  // Listen for when the image has been loaded
+  anotherImg.onLoad(() => {
+    console.log("Image is loaded");
+  });
+
+  // Advance image source configuration
+  anotherImg.setImage({
+    src: "https://picsum.photos/id/237/800/800",
+    loading: "lazy",
+    sizes: "(max-width: 642px) 100vw, 642px",
+    srcSet: [
+      {
+        size: "500w",
+        url: "https://picsum.photos/id/237/500/500",
+      },
+      {
+        size: "642w",
+        url: "https://picsum.photos/id/237/800/800",
+      },
+    ],
+  });
+});
+```
+
+This example demonstrates how to use `WFImage` in xAtom. It shows how to add or update image sources, listen for when an image has been loaded, and set the image loading mode.
+
+
+**Syntax**
+
+```typescript
+new WFImage(selector);
+```
+
+> #### Note
+>
+> **Compatibility with `WFComponent`**
+>
+> The `WFImage` seamlessly extends the capabilities of the `WFComponent` class. This means that all the properties and methods available in `WFComponent` are fully compatible and can be used with `WFImage`. This compatibility provides you with a wide range of options for enhancing and customizing the behavior of your image element. Feel free to leverage the power of both components to achieve your desired results efficiently.
+
+
+## Methods
+
+The `WFImage` class provides a range of properties and methods to facilitate your development process:
+
+
+### `setImage(config)` {#set-image}
+
+The `setImage()` method in the `WFImage` class allows you to manage the image source, loading behavior, and source sets.
+
+```typescript title="Example"
+// Initialize a WFImage instance with the specified selector
+const img = new WFImage(".img");
+
+// Set the image URL
+img.setImage("https://picsum.photos/id/237/200/300");
+
+// Or set the image source along with source set
+img.setImage({
+  src: "https://picsum.photos/id/237/800/800",
+  sizes: "(max-width: 642px) 100vw, 642px",
+  srcSet: [
+    {
+      size: "500w",
+      url: "https://picsum.photos/id/237/500/500",
+    },
+    {
+      size: "642w",
+      url: "https://picsum.photos/id/237/800/800",
+    },
+  ],
+});
+```
+
+**Syntax**
+
+```typescript
+setImage(config: string | imgConfig): void;
+```
+
+#### Parameters {#set-config-parameter}
+
+| Name    | Type     | Description                           |
+| ------- | -------- | ------------------------------------- |
+| `config`   | `string` or `imgConfig`  | The configuration to set.          |
+
+`imgConfig` object type
+
+| Name    | Type     | Description                           |
+| ------- | -------- | ------------------------------------- |
+| `src`   | `string`  | The image source to set.          |
+| `loading?`   | `"eager"` or `"lazy"`  | The loading behavior to set.          |
+| `sizes?`   | `string`  | The responsive image sizes to set.          |
+| `srcSet?`   | `{url: string, size: string}[]`  | The responsive image sources to set.          |
+---
+
+### `getImageConfig()` {#get-image-config}
+
+The `getImageConfig()` method in the `WFImage` class allows you to retrieve the image configuration if set programmatically.
+
+```typescript title="Example"
+// Initialize a WFImage instance with the specified selector
+const img = new WFImage(".img");
+
+// Set the image URL
+img.setImage("https://picsum.photos/id/237/200/300");
+
+console.log(img.getImageConfig()); // Output: https://picsum.photos/id/237/200/300
+```
+
+**Syntax**
+
+```typescript
+getImageConfig(): string | imgConfig;
+```
+---
+
+### `getSrc()` {#get-src}
+
+The `getSrc()` method in the `WFImage` class allows you to retrieve the image source.
+
+```typescript title="Example"
+// Initialize a WFImage instance with the specified selector
+const img = new WFImage(".img");
+console.log(img.getSrc()); // Output: https://picsum.photos/id/237/200/300
+```
+
+**Syntax**
+
+```typescript
+getSrc(): string;
+```
+---
+
+### `getSizes()` {#get-sizes}
+
+The `getSizes()` method in the `WFImage` class allows you to retrieve the image media condition set on the `sizes` attribute.
+
+```typescript title="Example"
+// Initialize a WFImage instance with the specified selector
+const img = new WFImage(".img");
+console.log(img.getSizes()); // Output: (max-width: 642px) 100vw, 642px
+```
+
+**Syntax**
+
+```typescript
+getSizes(): string;
+```
+---
+
+### `getSrcSet()` {#get-src-set}
+
+The `getSrcSet()` method in the `WFImage` class allows you to retrieve the set of images configured for the image.
+
+```typescript title="Example"
+// Initialize a WFImage instance with the specified selector
+const img = new WFImage(".img");
+console.log(img.getSrcSet()); // Output: https://picsum.photos/id/237/500/500 500w, https://picsum.photos/id/237/800/800 642w
+```
+
+**Syntax**
+
+```typescript
+getSrcSet(): string;
+```
+---
+
+### `getLoading()` {#get-loading}
+
+The `getLoading()` method in the `WFImage` class allows you to retrieve the value of the `loading` attribute set for the image.
+
+```typescript title="Example"
+// Initialize a WFImage instance with the specified selector
+const img = new WFImage(".img");
+console.log(img.getLoading()); // Output: lazy
+```
+
+**Syntax**
+
+```typescript
+getLoading(): "lazy" | "eager";
+```
+---
+### `onLoad(cb)` {#on-load}
+
+The `onLoad()` method in the `WFImage` class allows you to register a callback function to be executed when an image loads successfully.
+
+```typescript title="Example"
+// Initialize a WFImage instance with the specified selector
+const img = new WFImage(".img");
+
+img.onLoad(() => {
+  console.log("Image loaded successfully");
+});
+
+// Set the image source
+img.setImage("https://picsum.photos/id/237/200/300");
+```
+
+**Syntax**
+
+```typescript
+onLoad(cb: (event: Event) => void): void;
+```
+
+#### Parameters {#on-load-parameter}
+
+| Name   | Type                    | Description                                      |
+| ------ | ----------------------- | ------------------------------------------------ |
+| `cb`   | `function(event: Event)` | The callback function to execute on image load. |
+
+---
+### `onLoadError(cb)` {#on-load-error}
+
+The `onLoadError()` method in the `WFImage` class allows you to register a callback function to be executed when an image fails to load successfully.
+
+```typescript title="Example"
+// Initialize a WFImage instance with the specified selector
+const img = new WFImage(".img");
+
+img.onLoadError(() => {
+  console.log("Image failed to load");
+  // Retry logic can be implemented here
+});
+
+// Set the image source
+img.setImage("https://picsum.photos/id/237/200/300");
+```
+
+**Syntax**
+
+```typescript
+onLoadError(cb: (event: Event) => void): void;
+```
+
+#### Parameters {#on-load-error-parameter}
+
+| Name   | Type                    | Description                                      |
+| ------ | ----------------------- | ------------------------------------------------ |
+| `cb`   | `function(event: Event)` | The callback function to execute when an image fails to load. |
+
+
+================================================
+File: guide/reference/components/WFInvisibleForm.mdx
+================================================
+The `WFInvisibleForm` class, part of the xAtom framework, is a versatile component that empowers you to create form requests to Webflow without the need for visible form elements in your webflow page. This functionality extends the boundaries of traditional form handling, providing you with the freedom to design intricate form interactions and execute custom logic. WFInvisibleForm enables you to submit multiple forms or aggregate data from various forms into a single submission, all while maintaining complete control over the form submission process.
+
+#### Key Advantages of WFInvisibleForm
+
+- **Flexible Form Handling**: Escape the confines of Webflow's form elements, granting you the flexibility to craft sophisticated form interactions tailored to your project's requirements.
+
+- **Combine Multiple Forms**: WFInvisibleForm empowers you to amalgamate data from multiple forms into a unified submission, streamlining the data collection process and enhancing efficiency.
+
+- **Full Control**: With WFInvisibleForm, you wield absolute authority over the form submission process. Implement custom logic, validation procedures, and error handling tailored to your application's unique needs.
+
+## Getting Started
+
+**Initialization**: To commence your journey with the WFInvisibleForm class, adhere to the following steps:
+
+```typescript title="Example"
+import { WFInvisibleForm } from "@xatom/core";
+
+// Initialize a new instance of WFInvisibleForm with form name
+const invisibleForm = new WFInvisibleForm("My Form Name");
+
+// Define your form data as an object
+const formData = {
+  fullname: "John Doe",
+  email: "john@doe.com",
+};
+
+// Set form data
+invisibleForm.setFormData(formData);
+
+// Listen for successful form submissions
+invisibleForm.onSuccess(() => {
+  console.log("Form submission is successful");
+});
+
+// Listen for failed form submissions
+invisibleForm.onError(() => {
+  console.log("Form submission has encountered an error");
+});
+
+// Submit the form
+invisibleForm.submitForm();
+```
+
+In this example:
+
+- We create a fresh instance of `WFInvisibleForm` and assign it a meaningful name ("My Form Name").
+
+- Form data is defined as an object, allowing you to structure the necessary data for the form request.
+
+- The `setFormData` method is employed to set the form data within the invisible form.
+
+- Event listeners for both successful and failed form submissions are established using the `onSuccess` and `onError` methods, respectively.
+
+- Finally, the `submitForm` method is invoked to initiate the form submission process.
+
+With these foundational steps, you embark on a journey of leveraging the capabilities of the WFInvisibleForm class to create seamless and customized form submissions in your web application.
+
+**Syntax**
+
+```typescript
+new WFInvisibleForm(formTitle:string);
+```
+
+## Methods
+
+### `setFormName(formTitle)`
+
+Use this method to set the form name, which will be visible on Webflow's form submission email and form section.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>();
+
+//highlight-start
+// Set the form name
+invisibleForm.setFormName("Newsletter Form");
+//highlight-end
+```
+
+#### Syntax
+
+```typescript
+setFormName(formTitle: string): void
+```
+
+#### Parameters {#set-form-name-parameter}
+
+| Name        | Type     | Description                     |
+| ----------- | -------- | ------------------------------- |
+| `formTitle` | `string` | The name to assign to the form. |
+
+---
+
+### `getFormName()`
+
+This method allows you to retrieve the form name, which is visible on Webflow's form submission email and form section.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>();
+
+// Set the form name
+invisibleForm.setFormName("Newsletter Form");
+
+//highlight-start
+// Get the form name
+const formName = invisibleForm.getFormName();
+//highlight-end
+console.log(formName); // Newsletter Form
+```
+
+#### Syntax
+
+```typescript
+getFormName(): string
+```
+
+---
+
+### `setFormData(data)`
+
+Use this method to set the form data that will be included in the form submission to Webflow. Please note that file uploads will be submitted only if your Webflow hosting plan allows it.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>("Newsletter Form");
+
+//highlight-start
+// Set the form data
+invisibleForm.setFormData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+//highlight-end
+```
+
+#### Syntax
+
+```typescript
+setFormData(formData: { [key: string]: string | File | File[] }): void
+```
+
+#### Parameters {#set-form-data-parameter}
+
+| Name       | Type                                                         | Description                                     |
+| ---------- | ------------------------------------------------------------ | ----------------------------------------------- |
+| `formData` | <code>{[key:string]:string &#124; File &#124; File[]}</code> | An object containing form data to be submitted. |
+
+---
+
+### `getFormData()`
+
+This method allows you to retrieve the form data that will be included in the form submission to Webflow. It provides access to the data visible on Webflow's form submission email and form section.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>("Newsletter Form");
+
+// Set the form data
+invisibleForm.setFormData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+
+//highlight-start
+// Get form data
+const formData = invisibleForm.getFormData();
+//highlight-end
+console.log(formData); // { fullname: "John Doe", email: "john@doe.com" }
+```
+
+#### Syntax
+
+```typescript
+getFormData(): { [key: string]: string | File | File[] }
+```
+
+---
+
+### `submitForm()`
+
+Use this method to submit the form request to Webflow.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>("Newsletter Form");
+
+// Initialize a submit button using its CSS selector
+const submitBtn = new WFComponent(".submit-btn");
+
+// Set the form data
+invisibleForm.setFormData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+
+// Listen for a click event on the submit button
+submitBtn.on("click", () => {
+  // Submit the form when the button is clicked
+  //highlight-start
+  invisibleForm.submitForm();
+  //highlight-end
+});
+```
+
+#### Syntax
+
+```typescript
+submitForm(): void
+```
+
+---
+
+### `isLoading()`
+
+This method allows you to check if the form request is still processing or not.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>("Newsletter Form");
+
+// Initialize a submit button using its CSS selector
+const submitBtn = new WFComponent(".submit-btn");
+
+// Set the form data
+invisibleForm.setFormData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+
+// Listen for a click event on the submit button
+submitBtn.on("click", () => {
+  //highlight-start
+  // Check if the form is currently loading (submitting)
+  const isLoading = invisibleForm.isLoading();
+  //highlight-end
+  if (isLoading) {
+    // Prevent form submission if the form is already submitting
+    return;
+  }
+
+  // Submit the form when the button is clicked
+  invisibleForm.submitForm();
+});
+```
+
+#### Syntax
+
+```typescript
+isLoading(): boolean
+```
+
+---
+
+### `onLoadingChange(fn)`
+
+Use this method to listen to changes in the form's loading status by providing a callback function.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>("Newsletter Form");
+
+// Initialize a submit button using its CSS selector
+const submitBtn = new WFComponent(".submit-btn");
+const loadingSpinner = new WFComponent(".loading-spinner");
+
+// Set the form data
+invisibleForm.setFormData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+
+//highlight-start
+// Listen for changes in the loading status
+invisibleForm.onLoadingChange((status) => {
+  if (status) {
+    // If the form is loading (submitting), show the loading spinner
+    loadingSpinner.addCssClass("show");
+  } else {
+    // If the form is not loading, hide the loading spinner
+    loadingSpinner.removeCssClass("show");
+  }
+});
+//highlight-end
+
+// Listen for a click event on the submit button
+submitBtn.on("click", () => {
+  // Check if the form is currently loading (submitting)
+  const isLoading = invisibleForm.isLoading();
+  if (isLoading) {
+    // Prevent form submission if the form is already submitting
+    return;
+  }
+
+  // Submit the form when the button is clicked
+  invisibleForm.submitForm();
+});
+```
+
+#### Syntax
+
+```typescript
+onLoadingChange(fn: (status: boolean) => void): void
+```
+
+#### Parameters {#on-loading-parameter}
+
+| Name | Type       | Description                                                                  |
+| ---- | ---------- | ---------------------------------------------------------------------------- |
+| `fn` | `function` | A callback function that receives the loading status as a boolean parameter. |
+
+---
+
+### `onSuccess(fn)`
+
+This method allows you to listen for successful form submissions by providing a callback function.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>("Newsletter Form");
+
+// Initialize a submit button using its CSS selector
+const submitBtn = new WFComponent(".submit-btn");
+const successComponent = new WFComponent(".success-message");
+
+// Set the form data
+invisibleForm.setFormData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+
+//highlight-start
+// Listen for a successful form submission
+invisibleForm.onSuccess(() => {
+  // When the form submission is successful, show the success message component
+  successComponent.addCssClass("show");
+});
+//highlight-end
+
+// Submit the form
+invisibleForm.submitForm();
+```
+
+#### Syntax
+
+```typescript
+onSuccess(fn: () => void): void
+```
+
+#### Parameters {#on-success-parameter}
+
+| Name | Type       | Description                                                                |
+| ---- | ---------- | -------------------------------------------------------------------------- |
+| `fn` | `function` | A callback function to be executed when the form submission is successful. |
+
+---
+
+### `onError(fn)`
+
+This method allows you to listen for failed form submissions by providing a callback function.
+
+```typescript title="Example"
+// Initialize a new instance of WFInvisibleForm
+const invisibleForm = new WFInvisibleForm<{
+  fullname: string;
+  email: string;
+}>("Newsletter Form");
+
+// Initialize a submit button using its CSS selector
+const submitBtn = new WFComponent(".submit-btn");
+const errorComponent = new WFComponent(".error-message");
+
+// Set the form data
+invisibleForm.setFormData({
+  fullname: "John Doe",
+  email: "john@doe.com",
+});
+
+//highlight-start
+// Listen for a failed form submission
+invisibleForm.onError(() => {
+  // When the form submission fails, show the error message component
+  errorComponent.addCssClass("show");
+});
+//highlight-end
+
+// Submit the form
+invisibleForm.submitForm();
+```
+
+#### Syntax
+
+```typescript
+onError(fn: () => void): void
+```
+
+#### Parameters {#on-error-parameter}
+
+| Name | Type       | Description                                                                      |
+| ---- | ---------- | -------------------------------------------------------------------------------- |
+| `fn` | `function` | A callback function to be executed when the form submission encounters an error. |
+
+These methods provide comprehensive control over the form submission process, enabling you to customize form data, monitor loading status, and respond to both successful and failed form submissions.
+
+
+================================================
+File: guide/reference/components/WFNav.mdx
+================================================
+# WFNav 🆕
+
+```mdx-code-block
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+```
+
+The `WFNav` class empowers you to manage Webflow's Navbar element programmatically, providing functionalities such as opening, closing, and toggling the menu drawer with ease.
+
+## Getting Started
+
+**Initialization**: To start using the `WFNav` class in your xAtom project, you'll need to install the `@xatom/nav` package first. After installation, follow the example below to initialize `WFNav`:
+
+### Installing the package
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npm install @xatom/nav
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn add @xatom/nav
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm add @xatom/nav
+```
+
+</TabItem>
+</Tabs>
+
+```typescript title="Example"
+import { WFNav } from "@xatom/nav";
+import { onReady, WFComponent } from "@xatom/core";
+
+// Wait until the webflow page has loaded
+onReady(() => {
+  // Initialize WFNav
+  const nav = new WFNav(".w-nav");
+
+  // Initialize WFComponent for the button on the page
+  const button = new WFComponent(".button-on-page");
+
+  // Listen to the state of the nav menu
+  nav.onNavStateChange((isOpen) => {
+    console.log("Is navbar opened:", isOpen);
+  });
+
+  // On button click, toggle nav menu
+  button.on("click", () => {
+    nav.toggle();
+  });
+});
+```
+
+This example demonstrates how to use `WFNav` in xAtom. It shows how to toggle the nav menu drawer and listen to its state.
+
+**Syntax**
+
+```typescript
+new WFNav(selector);
+```
+
+:::caution
+
+Ensure that you open, close, or toggle the menu drawer only when the menu icon is visible. Navbar behavior can be unpredictable on desktop if trigger breakpoints are not properly set for navbar.
+
+:::
+
+> #### Note
+>
+> **Compatibility with `WFComponent`**
+>
+> The `WFNav` seamlessly extends the capabilities of the `WFComponent` class. This means that all the properties and methods available in `WFComponent` are fully compatible and can be used with `WFNav`. This compatibility provides you with a wide range of options for enhancing and customizing the behavior of your nav element. Feel free to leverage the power of both components to achieve your desired results efficiently.
+
+
+## Methods
+
+The `WFNav` class offers a range of properties and methods to streamline your development process:
+
+
+### `open()` {#open}
+
+The `open()` method in the `WFNav` class enables you to open the menu drawer.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Initialize WFComponent for the button on the page
+const button = new WFComponent(".button-on-page");
+
+// On button click, open nav menu
+button.on("click", () => {
+  nav.open();
+});
+```
+
+**Syntax**
+
+```typescript
+open(): void;
+```
+---
+
+### `close()` {#close}
+
+The `close()` method in the `WFNav` class allows you to close the menu drawer.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Initialize WFComponent for the button on the page
+const button = new WFComponent(".button-on-page");
+
+// On button click, close nav menu
+button.on("click", () => {
+  nav.close();
+});
+```
+
+**Syntax**
+
+```typescript
+close(): void;
+```
+
+---
+
+### `toggle()` {#toggle}
+
+The `toggle()` method in the `WFNav` class allows you to toggle the menu drawer.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Initialize WFComponent for the button on the page
+const button = new WFComponent(".button-on-page");
+
+// On button click, toggle nav menu
+button.on("click", () => {
+  nav.toggle();
+});
+```
+
+**Syntax**
+
+```typescript
+toggle(): void;
+```
+
+---
+
+### `isOpen()` {#is-open}
+
+The `isOpen()` method in the `WFNav` class allows you to check if the menu drawer is open.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Initialize WFComponent for the button on the page
+const button = new WFComponent(".button-on-page");
+
+// On button click, toggle nav menu
+button.on("click", () => {
+  nav.toggle();
+  console.log("Is menu opened:", nav.isOpen()); // Output: true or false
+});
+```
+
+**Syntax**
+
+```typescript
+isOpen(): boolean;
+```
+---
+
+### `getButtons()` {#get-buttons}
+
+The `getButtons()` method in the `WFNav` class returns an array of menu icon buttons.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Get the array of menu icon buttons
+const menuIcons = nav.getButtons();
+
+// Log the array of menu icon buttons
+console.log(menuIcons); // Output: [WFComponent]
+
+// Add an event listener to the first menu icon button
+menuIcons[0].on("click",()=>{
+  console.log("button is clicked");
+})
+```
+
+**Syntax**
+
+```typescript
+getButtons(): WFComponent[];
+```
+---
+
+### `getMenu()` {#get-menu}
+
+The `getMenu()` method in the `WFNav` class returns the menu container.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Get the menu container
+const menuContainer = nav.getMenu();
+
+// Log the menu container
+console.log(menuContainer); // Output: WFComponent
+
+// Set style for the menu container
+menuContainer.setStyle({
+  backgroundColor:"#444",
+})
+```
+
+**Syntax**
+
+```typescript
+getMenu(): WFComponent;
+```
+---
+
+### `getLinks()` {#get-links}
+
+The `getLinks()` method in the `WFNav` class returns an array of link components present in the menu.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Get all the links
+const links = nav.getLinks();
+
+// Log the links
+console.log(links); // Output: [WFComponent]
+```
+
+**Syntax**
+
+```typescript
+getLinks(): WFComponent[];
+```
+---
+
+### `getLinks()` {#get-links}
+
+The `getLinks()` method in the `WFNav` class returns an array of link components present in the menu.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Get all the links
+const links = nav.getLinks();
+
+// Log the links
+console.log(links); // Output: [WFComponent]
+```
+
+**Syntax**
+
+```typescript
+getLinks(): WFComponent[];
+```
+---
+
+### `getOverlay()` {#get-overlay}
+
+The `getOverlay()` method in the `WFNav` class returns the overlay container.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Get the overlay container
+const overlayContainer = nav.getOverlay();
+
+// Log the overlay container
+console.log(overlayContainer); // Output: WFComponent
+
+// Apply styles to the overlay container
+overlayContainer.setStyle({
+  backdropFilter: "blur(20px)"
+});
+```
+
+**Syntax**
+
+```typescript
+getOverlay(): WFComponent;
+```
+
+---
+
+### `getConfig()` {#get-config}
+
+The `getConfig()` method in the `WFNav` class returns the configuration object that defines the behavior of the navbar set by Webflow.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Get the navbar configuration
+const config = nav.getConfig();
+/**
+config is a configuration object
+{
+    "animation": "default",
+    "animOver": false,
+    "animDirect": 1,
+    "easing": "ease",
+    "easing2": "ease",
+    "duration": 200
+}
+*/
+
+// Modify the configuration (example: changing the animation duration)
+config.duration = 1000; // Setting animation duration to 1 second
+```
+
+**Syntax**
+
+```typescript
+getConfig(): Object;
+```
+
+---
+
+### `getWebflowObject()` {#get-config}
+
+The `getWebflowObject()` method in the `WFNav` class returns the `.wNav` jQuery object set by Webflow.
+
+```typescript title="Example"
+// Initialize WFNav
+const nav = new WFNav(".w-nav");
+
+// Get the Webflow object for the navbar
+const wNavConfig = nav.getWebflowObject();
+
+console.log(wNavConfig); // Output: wNav object
+```
+
+**Syntax**
+
+```typescript
+getWebflowObject(): Object;
+```
+
+================================================
+File: guide/reference/components/WFSlider.mdx
+================================================
+# WFSlider 🆕
+
+```mdx-code-block
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+```
+
+The `WFSlider` class provides functionality to control Webflow's native slider, enabling tasks such as adding or removing slides and navigating the slides programmatically.
+
+## Getting Started
+
+**Initialization**: To start using the `WFSlider` class in your xAtom project, you'll need to install the `@xatom/slider` package. After installation, initialize `WFSlider` as shown in the example below:
+
+### Installing the package
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npm install @xatom/slider
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn add @xatom/slider
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm add @xatom/slider
+```
+
+</TabItem>
+</Tabs>
+
+```typescript title="Example"
+import { WFSlider } from "@xatom/slider";
+import { onReady, WFComponent } from "@xatom/core";
+
+// Wait until the webflow page has loaded
+onReady(() => {
+  // Initialize WFSlider
+  const slider = new WFSlider(".slider");
+  const myButton = new WFComponent(".my-button");
+  const cmsItem = new WFComponent(".item");
+
+  // Add a slide to the slider
+  slider.addSlide(cmsItem);
+
+  // Remove the first slide from the slider
+  slider.removeSlide(0);
+
+  // Handle button click to navigate to the next slide
+  myButton.on("click", () => {
+    slider.goNext();
+  });
+  
+  // Listen for slide change events
+  slider.onSlideChange((activeIndex, prevIndex) => {
+    console.log(activeIndex, prevIndex);
+  });
+
+  // Configure the slider for infinite scrolling
+  slider.getConfig().config.infinite = true;
+});
+```
+
+This example showcases the integration of `WFSlider` into an xAtom project, featuring slide manipulation and navigation through programmatic control.
+
+**Syntax**
+
+```typescript
+new WFSlider(selector);
+```
+
+> #### Note
+>
+> **Compatibility with `WFComponent`**
+>
+> The `WFSlider` seamlessly extends the capabilities of the `WFComponent` class. This means that all the properties and methods available in `WFComponent` are fully compatible and can be used with `WFSlider`. This compatibility provides you with a wide range of options for enhancing and customizing the behavior of your slider element. Feel free to leverage the power of both components to achieve your desired results efficiently.
+
+
+## Methods
+
+The `WFSlider` class offers a variety of properties and methods to streamline your development workflow:
+
+
+### `addSlide(el, config)` {#add-slide}
+
+The `addSlide()` method in the `WFSlider` class allows you to add a new slide to the slider.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Initialize WFComponent for each slide
+const item1 = new WFSlider(".item1");
+const item2 = new WFSlider(".item2");
+const item3 = new WFSlider(".item3");
+
+// Add the first slide to the slider
+slider.addSlide(item1);
+
+// Add the second slide to the slider at index 2
+slider.addSlide(item2, { index: 2 });
+
+// Add the third slide to the slider with a custom CSS class
+slider.addSlide(item3, { cssClass: "custom-slide-class" });
+```
+
+**Syntax**
+
+```typescript
+addSlide(el: WFComponent, config?: { index?: number; cssClass?: string }): void;
+```
+
+#### Parameters {#add-slide-parameter}
+
+| Name      | Type          | Description                                |
+| --------- | ------------- | ------------------------------------------ |
+| `el`      | `WFComponent` | The component to add as a slide.           |
+| `config`  | `{}`          | Additional configuration for the slide.    |
+| `index?`   | `number`      | The index at which the slide should be inserted. |
+| `cssClass?`| `string`      | CSS class to be appended to the slide container. |
+
+---
+
+### `removeSlide(index)` {#remove-slide}
+
+The `removeSlide()` method in the `WFSlider` class enables you to remove a slide from the slider.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Initialize WFComponent for each slide
+const item1 = new WFSlider(".item1");
+
+// Add the first slide to the slider at index 1
+slider.addSlide(item1, { index: 1 });
+
+// Remove the slide at index 1 from the slider
+slider.removeSlide(1);
+```
+
+**Syntax**
+
+```typescript
+removeSlide(index: number): void;
+```
+
+#### Parameters {#remove-slide-parameter}
+
+| Name      | Type          | Description                                |
+| --------- | ------------- | ------------------------------------------ |
+| `index`   | `number`      | The index of the slide to be removed.      |
+---
+
+### `goNext()` {#go-next-slide}
+
+The `goNext()` method in the `WFSlider` class allows you to programmatically navigate to the next slide.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+const myButton = new WFSlider(".my-button");
+
+// On button click, go to the next slide
+myButton.on("click", () => {
+    slider.goNext();
+});
+```
+
+**Syntax**
+
+```typescript
+goNext(): void;
+```
+---
+
+### `goPrevious()` {#go-previous-slide}
+
+The `goPrevious()` method in the `WFSlider` class allows you to programmatically navigate to the previous slide.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+const prevButton = new WFSlider(".prev-button");
+
+// On button click, go to the previous slide
+prevButton.on("click", () => {
+    slider.goPrevious();
+});
+```
+
+**Syntax**
+
+```typescript
+goPrevious(): void;
+```
+---
+
+### `goToIndex(index)` {#go-to-index}
+
+The `goToIndex()` method in the `WFSlider` class allows you to programmatically navigate to a specific slide by its index.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+const navButtons = document.querySelectorAll(".nav-button");
+
+// On nav button click, go to the corresponding slide
+navButtons.forEach((button, index) => {
+    button.addEventListener("click", () => {
+        slider.goToIndex(index);
+    });
+});
+```
+
+**Syntax**
+
+```typescript
+goToIndex(index: number): void;
+```
+
+#### Parameters {#go-to-index-parameter}
+
+| Name      | Type     | Description                                  |
+| --------- | -------- | -------------------------------------------- |
+| `index`   | `number` | The index of the slide to navigate to.       |
+---
+
+### `getActiveSlide()` {#active-slide}
+
+The `getActiveSlide()` method in the `WFSlider` class returns the active slide component.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+const prevButton = new WFSlider(".prev-button");
+
+// On button click
+prevButton.on("click", () => {
+  //Getting current slide
+  const activeSlide = slider.getActiveSlide();
+  //Updating style
+  activeSlide.setStyle({
+    background: "#ccc"
+  });
+});
+```
+
+**Syntax**
+
+```typescript
+getActiveSlide(): WFComponent;
+```
+---
+
+### `getAllSlides()` {#all-slides}
+
+The `getAllSlides()` method in the `WFSlider` class retrieves an array containing all slide components.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Get all slides
+const allSlides = slider.getAllSlides();
+
+// Log all slide components
+console.log(allSlides);
+```
+
+**Syntax**
+
+```typescript
+getAllSlides(): WFComponent[];
+```
+---
+
+### `getSlideByIndex(index)` {#slide-by-index}
+
+The `getSlideByIndex()` method in the `WFSlider` class retrieves a slide component by its index.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Get the slide at index 2
+const slideAtIndex2 = slider.getSlideByIndex(2);
+
+// Log the slide component
+console.log(slideAtIndex2);
+```
+
+**Syntax**
+
+```typescript
+getSlideByIndex(index: number): WFComponent;
+```
+---
+
+### `getActiveSlideIndex()` {#active-slide-index}
+
+The `getActiveSlideIndex()` method in the `WFSlider` class returns the index of the currently active slide.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Log the active slide index
+console.log("Active slide index:", activeSlideIndex.getActiveSlideIndex()); //1
+
+slider.goNextSlide();
+
+console.log("Active slide index:", activeSlideIndex.getActiveSlideIndex()); //2
+
+```
+
+**Syntax**
+
+```typescript
+getActiveSlideIndex(): number;
+```
+---
+
+### `getPreviousSlideIndex()` {#previous-slide-index}
+
+The `getPreviousSlideIndex()` method in the `WFSlider` class returns the index of the previously active slide.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Log the previous slide index
+console.log("Previous slide index:", slider.getPreviousSlideIndex()); //0
+
+slider.goPrevious();
+
+console.log("Previous slide index:", slider.getPreviousSlideIndex()); //3
+```
+
+**Syntax**
+
+```typescript
+getPreviousSlideIndex(): number;
+```
+---
+
+### `onSlideChange(cb)` {#slide-change-event}
+
+The `onSlideChange` method in the `WFSlider` class allows you to register a callback function to be executed when the active slide changes.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Define the callback function
+const slideChangeCallback = (activeIndex:number, prevIndex:number) => {
+  console.log(`Slide changed from ${prevIndex} to ${activeIndex}`);
+};
+
+// Register the callback function
+const unregisterCallback = slider.onSlideChange(slideChangeCallback);
+
+// To unregister the callback function later
+// unregisterCallback();
+```
+
+**Syntax**
+
+```typescript
+onSlideChange(cb: (activeIndex: number, prevIndex: number) => void): () => void;
+```
+
+#### Parameters {#slide-change-callback-parameters}
+
+| Name          | Type                                          | Description                                            |
+| ------------- | --------------------------------------------- | ------------------------------------------------------ |
+| `cb`          | `(activeIndex: number, prevIndex: number) => void` | The callback function to be executed on slide change. |
+
+#### Returns
+
+A function to unregister the callback when no longer needed.
+
+---
+
+### `getSlideNav()` {#slide-nav-component}
+
+The `getSlideNav()` method in the `WFSlider` class returns the navigation component associated with the slider.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Get the navigation component
+const navComponent = slider.getSlideNav();
+
+// Modify the navigation component
+navComponent.setStyle({
+  backgroundColor: "#000",
+  color: "#fff",
+});
+```
+
+**Syntax**
+
+```typescript
+getSlideNav(): WFComponent<HTMLElement>;
+```
+---
+
+### `setSlideNavigationState(state: boolean)` {#set-slide-navigation-state}
+
+The `setSlideNavigationState()` method in the `WFSlider` class enables or disables the navigation capabilities of the slider.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Disable slider navigation
+slider.setSlideNavigationState(false);
+
+// Enable slider navigation
+slider.setSlideNavigationState(true);
+```
+
+**Syntax**
+
+```typescript
+setSlideNavigationState(state: boolean): void;
+```
+---
+
+
+#### Parameters {#set-slide-navigation-parameter}
+
+| Name      | Type      | Description                            |
+| --------- | --------- | -------------------------------------- |
+| `state`   | `boolean` | `true` to enable navigation, `false` to disable it. |
+
+---
+
+### `getConfig()` {#get-config}
+
+The `getConfig()` method in the `WFSlider` class returns the configuration object set by Webflow for the slider.
+
+```typescript title="Example"
+// Initialize WFSlider
+const slider = new WFSlider(".slider");
+
+// Get the configuration object
+const config = slider.getConfig();
+
+console.log(config); // Output: Webflow slider configuration object
+```
+
+**Syntax**
+
+```typescript
+getConfig(): object;
+```
+
+================================================
+File: guide/reference/components/WFTabs.mdx
+================================================
+# WFTabs 🆕
+
+```mdx-code-block
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+```
+
+The `WFTabs` class offers functionality to manage Webflow's built-in tabs, facilitating tasks like adding or removing tabs and navigating between them programmatically.
+
+## Getting Started
+
+**Initialization**: To begin using the `WFTabs` class in your xAtom project, you'll first need to install the `@xatom/tabs` package. After installation, initialize `WFTabs` as demonstrated in the example below:
+### Installing the package
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npm install @xatom/slider
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn add @xatom/slider
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm add @xatom/slider
+```
+
+</TabItem>
+</Tabs>
+
+```typescript title="Example"
+import { WFTabs } from "@xatom/tabs";
+import { onReady, WFComponent } from "@xatom/core";
+
+// Wait until the webflow page has loaded
+onReady(() => {
+  // Initialize WFTabs
+  const tabs = new WFTabs(".tabs");
+  const myButton = new WFComponent(".my-button");
+  // Initialize WFComponent for the menu item
+  const menuItem = new WFComponent(".menu-item");
+
+  // Initialize WFComponent for the panel item
+  const panelItem = new WFComponent(".panel-item");
+
+  // Add a new tab
+  tabs.addTab({
+    menuItem: menuItem,
+    panelItem: panelItem,
+    index: 0,
+  });
+
+  // Handle button click to navigate to the tab by index
+  myButton.on("click", () => {
+    tabs.goToTabByIndex(2);
+  });
+
+  // Listen for tabs change events
+  tabs.onTabChange((index) => {
+    console.log(index);
+  });
+});
+```
+
+This example demonstrates the integration of `WFTabs` into an xAtom project, showcasing slide manipulation and navigation through programmatic control.
+
+**Syntax**
+
+```typescript
+new WFTabs(selector);
+```
+
+> #### Note
+>
+> **Compatibility with `WFComponent`**
+>
+> The `WFTabs` seamlessly extends the capabilities of the `WFComponent` class. This means that all the properties and methods available in `WFComponent` are fully compatible and can be used with `WFTabs`. This compatibility provides you with a wide range of options for enhancing and customizing the behavior of your tabs element. Feel free to leverage the power of both components to achieve your desired results efficiently.
+
+
+## Methods
+
+The `WFTabs` class provides a range of properties and methods to facilitate your development process:
+
+### `addTab(data)` {#add-tab}
+
+The `addTab()` method in the `WFTabs` class allows you to add a new tab.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Initialize WFComponent for the menu item
+const menuItem = new WFComponent(".menu-item");
+
+// Initialize WFComponent for the panel item
+const panelItem = new WFComponent(".panel-item");
+
+// Add a new tab
+tabs.addTab({
+    menuItem: menuItem,
+    panelItem: panelItem,
+});
+```
+
+**Syntax**
+
+```typescript
+addTab(data: { menuItem: WFComponent, menuItemClass?: string, panelItem: WFComponent, panelItemClass?: string, index?: number }): void;
+```
+
+#### Parameters {#add-tab-parameter}
+
+| Name             | Type              | Description                                    |
+| ---------------- | ----------------- | ---------------------------------------------- |
+| `data`           | `{}`              | Data object containing information about the tab. |
+| `data.menuItem`  | `WFComponent`     | Menu item component to be added as a tab.      |
+| `data.menuItemClass` | `string`       | CSS class for the menu item.                   |
+| `data.panelItem` | `WFComponent`     | Panel item component to be added as a tab.     |
+| `data.panelItemClass` | `string`       | CSS class for the panel item.                  |
+| `data.index`     | `number`          | Index at which the tab should be added.        |
+
+---
+
+### `removeTab(index)` {#remove-tab}
+
+The `removeTab()` method in the `WFTabs` class allows you to remove a tab at the specified index.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Remove the tab at index 2
+tabs.removeTab(2);
+```
+
+**Syntax**
+
+```typescript
+removeTab(index: number): void;
+```
+
+#### Parameters {#remove-tab-parameter}
+
+| Name      | Type     | Description                           |
+| --------- | -------- | ------------------------------------- |
+| `index`   | `number` | The index of the tab to be removed.   |
+
+---
+
+### `goToTabByIndex(index)` {#go-to-tab-by-index}
+
+The `goToTabByIndex()` method in the `WFTabs` class allows you to programmatically switch to a tab by its index.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Go to the tab at index 3
+tabs.goToTabByIndex(3);
+```
+
+**Syntax**
+
+```typescript
+goToTabByIndex(index: number): void;
+```
+
+#### Parameters {#go-to-tab-by-index-parameter}
+
+| Name      | Type     | Description                           |
+| --------- | -------- | ------------------------------------- |
+| `index`   | `number` | The index of the tab to navigate to.  |
+
+---
+
+### `goToNextTab(infinite?)` {#go-to-next-tab}
+
+The `goToNextTab()` method in the `WFTabs` class allows you to programmatically switch to the next tab.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Go to the next tab
+tabs.goToNextTab();
+```
+
+**Syntax**
+
+```typescript
+goToNextTab(infinite?: boolean): void;
+```
+
+#### Parameters {#go-to-next-tab-parameter}
+
+| Name       | Type      | Description                                    |
+| ---------- | --------- | ---------------------------------------------- |
+| `infinite` | `boolean` | Optional. Specifies whether the tabs are in an infinite loop. Default is `false`. |
+
+---
+
+### `goToPreviousTab(infinite?)` {#go-to-previous-tab}
+
+The `goToPreviousTab()` method in the `WFTabs` class allows you to programmatically switch to the previous tab.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Go to the previous tab
+tabs.goToPreviousTab();
+```
+
+**Syntax**
+
+```typescript
+goToPreviousTab(infinite?: boolean): void;
+```
+
+#### Parameters {#go-to-previous-tab-parameter}
+
+| Name       | Type      | Description                                    |
+| ---------- | --------- | ---------------------------------------------- |
+| `infinite` | `boolean` | Optional. Specifies whether the tabs are in an infinite loop. Default is `false`. |
+
+---
+
+### `getAllTab()` {#get-all-tab}
+
+The `getAllTab()` method in the `WFTabs` class returns an object containing arrays of menu items and panel items.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Get all tabs
+const allTabs = tabs.getAllTab();
+
+console.log(allTabs.menuItems); // Array of menu items
+console.log(allTabs.panelItems); // Array of panel items
+```
+
+**Syntax**
+
+```typescript
+getAllTab(): { menuItems: WFComponent<HTMLAnchorElement>[]; panelItems: WFComponent<HTMLDivElement>[]; };
+```
+
+This method returns an object with two properties:
+- `menuItems`: An array of menu items (`WFComponent<HTMLAnchorElement>[]`).
+- `panelItems`: An array of panel items (`WFComponent<HTMLDivElement>[]`).
+
+---
+
+### `getActiveTabIndex()` {#get-active-tab-index}
+
+The `getActiveTabIndex()` method in the `WFTabs` class returns the index of the currently active tab.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Get the index of the active tab
+const activeTabIndex = tabs.getActiveTabIndex();
+
+console.log(activeTabIndex); // Output: Index of the active tab
+```
+
+**Syntax**
+
+```typescript
+getActiveTabIndex(): number;
+```
+
+This method returns a `number` representing the index of the currently active tab.
+
+---
+
+### `getActivePanel()` {#get-active-panel}
+
+The `getActivePanel()` method in the `WFTabs` class returns the currently active panel component.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Get the active panel component
+const activePanel = tabs.getActivePanel();
+
+console.log(activePanel); // Output: Currently active panel component
+```
+
+**Syntax**
+
+```typescript
+getActivePanel(): WFComponent<HTMLDivElement>;
+```
+
+---
+
+### `getActiveMenuItem()` {#get-active-menu-item}
+
+The `getActiveMenuItem()` method in the `WFTabs` class returns the currently active menu item component.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Get the active menu item component
+const activeMenuItem = tabs.getActiveMenuItem();
+
+console.log(activeMenuItem); // Output: Currently active menu item component
+```
+
+**Syntax**
+
+```typescript
+getActiveMenuItem(): WFComponent<HTMLAnchorElement>;
+```
+
+This method returns a `WFComponent<HTMLAnchorElement>` representing the currently active menu item component.
+
+---
+
+### `getMenuContainer()` {#get-menu-container}
+
+The `getMenuContainer()` method in the `WFTabs` class returns the container element holding the tab menu items.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Get the menu container element
+const menuContainer = tabs.getMenuContainer();
+
+console.log(menuContainer); // Output: Container element holding tab menu items
+```
+
+**Syntax**
+
+```typescript
+getMenuContainer(): WFComponent<HTMLElement>;
+```
+
+This method returns a `WFComponent<HTMLElement>` representing the container element holding the tab menu items.
+
+---
+
+### `getContentContainer()` {#get-content-container}
+
+The `getContentContainer()` method in the `WFTabs` class returns the container element holding the tab content panels.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Get the content container element
+const contentContainer = tabs.getContentContainer();
+
+console.log(contentContainer); // Output: Container element holding tab content panels
+```
+
+**Syntax**
+
+```typescript
+getContentContainer(): WFComponent<HTMLElement>;
+```
+
+This method returns a `WFComponent<HTMLElement>` representing the container element holding the tab content panels.
+
+---
+
+### `onTabChange(cb)` {#on-tab-change}
+
+The `onTabChange()` method in the `WFTabs` class allows you to register a callback function that will be invoked whenever a tab change occurs.
+
+```typescript title="Example"
+// Initialize WFTabs
+const tabs = new WFTabs(".tabs");
+
+// Register a callback function for tab change
+const unregisterCallback = tabs.onTabChange((index) => {
+  console.log("Tab changed to index:", index);
+});
+
+// Unregister the callback function
+unregisterCallback();
+```
+
+**Syntax**
+
+```typescript
+onTabChange(cb: (index:number)=>void): () => void;
+```
+
+#### Parameters {#on-tab-change-parameter}
+
+| Name  | Type      | Description                                  |
+| ----- | --------- | -------------------------------------------- |
+| `cb`  | `(index:number)=>void`  | The callback function for tab change events. |
+
+This method returns a function that can be used to unregister the callback.
+
+---
+
+================================================
+File: guide/reference/routing/WFRoute.mdx
+================================================
+The `WFRoute` class in the xAtom Framework 🚀 empowers your web app with URL route-based logic execution. It's like having a GPS for your app's navigation! 🗺️
+
+With `WFRoute`, you can:
+
+- ✨ Create dynamic routes with ease.
+- 🔗 Group routes for organized logic.
+- 🏃 Run specific business logic based on the current route.
+- 🔐 Make Webflow pages protected or public at the client level.
+- 🧩 Utilize variables within your routes.
+- 📝 Access and work with page parameters effortlessly.
+
+Navigate through the power of URLs and let `WFRoute` simplify your app's routing logic! 💡
+
+## Getting Started
+
+**Initialization**: To embark on your journey with the `WFRoute` class, you need to initialize it with a route string. Below is a step-by-step guide to kickstart your route management:
+
+> #### Pro Tip
+>
+> It's considered best practice to house your route logic within the `/src/routes` directory.
+
+### Basic Routing
+
+For a basic route, simply create an instance of `WFRoute` and specify the route path. Then, use the `execute` method to define the logic to be executed when the route is accessed.
+
+```typescript title="Example"
+import { WFRoute } from "@xatom/core";
+import { settingPage } from "../modules/setting";
+
+// Define a simple route for sign-up page
+new WFRoute("/sign-up").execute(() => {
+  // Execute your logic for /sign-up
+});
+
+// Create routes with URL parameters, such as the invite page with a token parameter
+// URL: /invite?token=XYZ
+new WFRoute("/invite").execute((params: { token: string }) => {
+  // Execute your logic for /invite
+  console.log(params.token); // XYZ
+});
+
+// Group your routes using (.*) expressions to manage all routes under /dashboard
+new WFRoute("/dashboard/(.*)").execute(() => {
+  // Handle child routes
+
+  // Create a route for the profile page
+  new WFRoute("/dashboard/profile").execute(() => {
+    // Define logic for your profile page
+  });
+
+  // Execute logic from an imported function for the /dashboard/settings route
+  new WFRoute("/dashboard/settings").execute(settingPage);
+});
+
+// Utilize variable routes to apply a single business logic to all blog posts
+// Example URL: /blogs/how-get-started
+new WFRoute("/blogs/:post").execute(
+  (params: { post: string }) => {
+    // Execute logic for your post page
+    console.log(params.post); // how-get-started
+  }
+);
+```
+
+### Routes with Middleware
+
+Enhance your route security effortlessly by protecting specific routes or groups of routes with middleware. Simply chain your routes using the `withMiddleware` method. This feature seamlessly integrates with the `WFAuthMiddleware` instance. Explore more about `WFAuthMiddleware` details [here](/guide/reference/auth/WFAuthMiddleware/). Fortify your route security with ease! 💪🚀
+
+```typescript title="Example"
+import { WFRoute } from "@xatom/core";
+import { userMiddleware } from "../modules/auth/user";
+
+// Define a WFRoute that allows only non-logged-in users to access the sign-up page
+new WFRoute("/sign-up")
+  .withMiddleware(userMiddleware, "GUEST", "allow", {
+    onError: () => {
+      // If the user's role is not guest, navigate to the dashboard
+      window.location = "/dashboard";
+    },
+  })
+  .execute(() => {
+    // Execute your logic for /sign-up
+  });
+
+// Create a WFRoute that permits only logged-in users to access all pages falling under the dashboard
+new WFRoute("/dashboard/(.*)")
+  .withMiddleware(userMiddleware, "USER", "allow")
+  .execute((params: { token: string }) => {
+    // Handle child routes
+
+    // Logic for the profile page
+    new WFRoute("/dashboard/profile").execute(() => {
+      // Define logic for your profile page
+    });
+
+    // Logic for the message page
+    new WFRoute("/dashboard/messages").execute(() => {
+      // Define logic for your message page
+    });
+  });
+
+// Set up a WFRoute that restricts access to a route to only logged-in users
+new WFRoute("/my-protected-page")
+  .withMiddleware(userMiddleware, "USER", "allow", {
+    onError: () => {
+      // If the user's role is not user (not logged in), navigate to the unauthorized page
+      window.location = "/not-allowed";
+    },
+  })
+  .execute(() => {
+    // Define logic for your protected page
+  });
+```
+
+**Syntax**
+
+```typescript
+new WFRoute(routePath:string);
+```
+
+## Methods
+
+The `WFRoute` class provides an extensive array of properties and methods to enhance the security of your web application:
+
+### `execute(fn)`
+
+The `execute` method allows you to specify a callback function that is executed when a matching route is encountered. This callback function can also access route parameters.
+
+```typescript title="Example"
+// Example 1: Basic route without parameters
+new WFRoute("/my-page").execute(() => {
+  // Define your page logic here
+});
+
+// Example 2: Route with a parameter (e.g., /my-page/123)
+new WFRoute("/my-page/:id").execute((params: { id: string }) => {
+  console.log(params.id); // Access route variables (e.g., 123)
+});
+
+// Example 3: Route with a query parameter (e.g., /my-page?id=123)
+new WFRoute("/my-page").execute((params: { id: string }) => {
+  console.log(params.id); // Access query parameters (e.g., 123)
+});
+```
+
+#### Syntax
+
+```typescript
+execute(fn: (params: {[key: string]: string}) => void): WFRoute
+```
+
+#### Parameters {#execute-parameter}
+
+| Name | Type       | Description         |
+| ---- | ---------- | ------------------- |
+| `fn` | `function` | A callback function |
+
+#### Callback Function Parameters {#execute-fn-parameter}
+
+| Name      | Type                    | Description          |
+| --------- | ----------------------- | -------------------- |
+| `paramse` | `{[key:string]:string}` | Route parameter data |
+
+### `withMiddleware()`
+
+The `withMiddleware` method enables you to add middleware to your routes, providing enhanced security and control over route access.
+
+```typescript title="Example"
+// Define a WFRoute that allows only non-logged-in users to access the sign-up page
+new WFRoute("/sign-up")
+  .withMiddleware(userMiddleware, "GUEST", "allow", {
+    onError: () => {
+      // If the user's role is not guest, navigate to the dashboard
+      window.location = "/dashboard";
+    },
+  })
+  .execute(() => {
+    // Execute your logic for /sign-up
+  });
+```
+
+#### Syntax
+
+```typescript
+withMiddleware(
+  middleware: WFAuthMiddleware,
+  role: string,
+  permission: "allow" | "disallow",
+  config: { onError: () => void }
+): WFRoute
+```
+
+#### Parameters {#with-middleware}
+
+| Name         | Type                      | Description                                                                 |
+| ------------ | ------------------------- | --------------------------------------------------------------------------- |
+| `middleware` | `WFAuthMiddleware`        | An instance of `WFAuthMiddleware`.                                          |
+| `role`       | `string`                  | The role specified when initializing `WFAuthMiddleware`.                    |
+| `permission` | `"allow"` or `"disallow"` | The middleware permission (`allow` or `disallow`).                          |
+| `config`     | `{ onError: () => void }` | Middleware configuration, including an `onError` function to handle errors. |
+
+
+================================================
+File: guide/reference/services/GraphQLClient.mdx
+================================================
+# Apollo GraphQL Client
+
+
+================================================
+File: guide/reference/services/RESTAPIClient.mdx
+================================================
+# REST API Client
+
+```mdx-code-block
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+```
+
+The `AxiosClient` class empowers your web application to effortlessly communicate with custom REST APIs. This robust data service streamlines API interactions, providing developers with a user-friendly and flexible solution. 💼
+
+With `AxiosClient`, you can:
+
+- 📝 Have complete control over request headers
+- 🚀 Add TypeScript support for request response and request body data
+- 🔗 Attach multiple listeners to events like data, error, or loading
+- 👨‍💻 Organize your UI logic based on data, error, or loading state
+
+## Getting Started
+
+**Initialization**: To harness the power of `AxiosClient` in your xAtom project, start by installing the `@xatom/axios` package. Then, initialize `AxiosClientConfigurator` and `AxiosClient` as demonstrated in the example below:
+
+### Installing the package
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash title="Terminal"
+npm install @xatom/axios
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash title="Terminal"
+yarn add @xatom/axios
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash title="Terminal"
+pnpm add @xatom/axios
+```
+
+</TabItem>
+</Tabs>
+
+```typescript title="Example"
+import {
+  AxiosClient,
+  AxiosClientConfigurator,
+} from "@xatom/axios";
+import { onReady } from "@xatom/core";
+
+// Configure the base URL for your API
+const axiosConfigurator = new AxiosClientConfigurator(
+  "https://your-api-base-url.com"
+);
+
+const axiosClient = new AxiosClient(axiosConfigurator);
+
+onReady(() => {
+  // Define an API request to get users with pagination
+  const getUsers = axiosClient.get<MyUserType>("/users?page=2");
+
+  // Listen to loading state changes
+  getUsers.onLoadingChange((status) => {
+    console.log("Is loading:", status); // true or false
+  });
+
+  // Listen to successful response
+  getUsers.onData((data) => {
+    console.log("Response:", data);
+  });
+
+  // Listen to errors
+  getUsers.onError((error) => {
+    console.error("Error:", error);
+  });
+
+  // Initiate the API request
+  getUsers.fetch();
+});
+```
+
+This example demonstrates using AxiosClient in xAtom to make an asynchronous API request, handling loading states, and logging data or errors.
+
+## Methods
+
+The `AxiosClient` and `AxiosClientConfigurator` classes equip you with a robust set of properties and methods, enhancing your development experience:
+
+**AxiosClientConfigurator Methods**
+
+### `beforeRequest((config, nxtFn) => void)` {#before-request}
+
+The `beforeRequest()` on `AxiosClientConfigurator` method allows you to modify the configuration of the Axios client or logically control whether the request should be made to achieve secure requests.
+
+```typescript title="Example"
+// Initialize the AxiosClientConfigurator with the base API URL
+const axiosConfigurator = new AxiosClientConfigurator(
+  "https://your-api-base-url.com"
+);
+
+// Configure a function to be executed before each request
+axiosConfigurator.beforeRequest((config, nextFn) => {
+  // Modify the request configuration, for example, add an Authorization header
+  config.headers.Authorization = "Bearer MY_TOKEN";
+
+  // Call nextFn to continue with the modified configuration
+  nextFn(config);
+});
+```
+
+**Syntax**
+
+```typescript
+beforeRequest(fn: (config: axiosConfig, nxtFn: (config: axiosConfig) => void) => void): AxiosClientConfigurator;
+```
+
+#### Parameters {#before-request-parameters}
+
+| Name     | Type                            | Description                                                          |
+| -------- | ------------------------------- | -------------------------------------------------------------------- |
+| `fn`     | `(config, nxtFn) => void`       | A function to modify the configuration or decide whether to proceed. |
+| `config` | `axiosConfig`                   | The configuration of the Axios client for the current request.       |
+| `nxtFn`  | `(config: axiosConfig) => void` | A function to proceed with the request, passing the modified config. |
+
+### `retryRequestOnFailed((err, config, retryFn) => void)` {#retry-request}
+
+The `retryRequestOnFailed()` method on `AxiosClientConfigurator` allows you to handle request errors globally and retry the request with a new configuration of the Axios client. This is useful for scenarios like retrying requests on token expiration or timeout.
+
+```typescript title="Example"
+// Initialize the AxiosClientConfigurator with the base API URL
+const axiosConfigurator = new AxiosClientConfigurator(
+  "https://your-api-base-url.com"
+);
+
+// Configure the retry behavior on failed requests
+axiosConfigurator.retryRequestOnFailed(
+  (err, config, retryFn) => {
+    // Check if the error is due to an expired token
+    if (err && err.message === "TOKEN_EXPIRED") {
+      // Get a new token using the refresh token
+      const newToken = getNewTokenWithRefreshToken();
+
+      // If a new token is obtained, update the Authorization header and retry the request
+      if (newToken) {
+        config.headers.Authorization = `Bearer ${newToken}`;
+        retryFn(config);
+      } else {
+        // If no new token is obtained, log out the user
+        logoutUser();
+      }
+    } else {
+      // Handle unknown errors
+    }
+  }
+);
+```
+
+**Syntax**
+
+```typescript
+retryRequestOnFailed(fn: (error: Error, config: axiosConfig, retryFn: (config: axiosConfig) => void) => void): AxiosClientConfigurator;
+```
+
+#### Parameters {#retry-request-parameters}
+
+| Name      | Type                               | Description                                                               |
+| --------- | ---------------------------------- | ------------------------------------------------------------------------- |
+| `fn`      | `(error, config, retryFn) => void` | A function to handle errors and trigger a retry with a new configuration. |
+| `error`   | `Error`                            | The error that occurred during the initial request.                       |
+| `config`  | `axiosConfig`                      | The configuration of the Axios client for the failed request.             |
+| `retryFn` | `(config) => void`                 | A function to retry the request with a new configuration.                 |
+
+### Request Types {#type-of-request}
+
+`AxiosClient` provides support for various HTTP methods:
+
+- The `get()` method allows you to perform `GET` requests.
+- The `post()` method enables `POST` requests.
+- The `patch()` method facilitates `PATCH` requests.
+- The `put()` method is designed for making `PUT` requests.
+- The `delete()` method allows you to initiate `DELETE` requests.
+
+```typescript title="Request Type Examples"
+// Initialize AxiosClient with the configured AxiosClientConfigurator
+const axiosClient = new AxiosClient(axiosConfigurator);
+
+// Example of making a GET request
+const getUser = axiosClient.get("/user", { id: 1 });
+
+// Example of making a POST request
+const postUser = axiosClient.post("/create/user", {
+  fullName: "John doe",
+  age: 21,
+});
+
+// Example of making a PATCH request
+const patchUser = axiosClient.patch("/user", { id: 1, age: 22 });
+
+// Example of making a PUT request
+const putUser = axiosClient.put("/user", {
+  id: 1,
+  bio: "I ❤️ xAtom",
+});
+
+// Example of making a DELETE request
+const deleteUser = axiosClient.delete("/user", { id: 1 });
+```
+
+**Syntax**
+
+```typescript
+get(path: string, requestData: Object): AxiosClientControl;
+post(path: string, requestData: Object): AxiosClientControl;
+patch(path: string, requestData: Object): AxiosClientControl;
+put(path: string, requestData: Object): AxiosClientControl;
+delete(path: string, requestData: Object): AxiosClientControl;
+```
+
+#### Parameters {#request-parameters}
+
+| Name   | Type     | Description                  |
+| ------ | -------- | ---------------------------- |
+| `path` | `string` | Endpoint path                |
+| `data` | `Object` | Data payload for the request |
+
+### `fetch(data,headers)` {#fetch-request}
+
+The `fetch` method in `AxiosClient` allows you to initiate the request programmatically.
+
+```typescript title="Example"
+// Initialize AxiosClient with the configured AxiosClientConfigurator
+const axiosClient = new AxiosClient(axiosConfigurator);
+
+// Example of making a GET request
+const getUser = axiosClient.get("/user");
+
+// Fetch the GET request with data payload
+getUser.fetch({ id: 1 });
+```
+
+**Syntax**
+
+```typescript
+fetch(data: Object?, headers: AxiosHeaders?): Promise<Response>;
+```
+
+#### Parameters {#fetch-request-parameters}
+
+| Name      | Type           | Description                                                   |
+| --------- | -------------- | ------------------------------------------------------------- |
+| `data`    | `Object`       | Optional data argument to send payload along with the request |
+| `headers` | `AxiosHeaders` | Optional Axios headers to be sent with the request            |
+
+### `onLoadingChange(fn)` {#loading-change-request}
+
+The `onLoadingChange` method in `AxiosClient` enables you to listen to changes in the loading status of a request, indicating whether the request is in progress or completed. Your application can incorporate multiple instances of the `onLoadingChange` method to handle various loading status scenarios.
+
+```typescript title="Example"
+// Initialize AxiosClient with the configured AxiosClientConfigurator
+const axiosClient = new AxiosClient(axiosConfigurator);
+
+// Example of making a GET request
+const getUser = axiosClient.get("/user");
+
+// Listen to request loading status changes
+getUser.onLoadingChange((status) => {
+  console.log(status); // Output: true (request in progress) or false (request done)
+});
+
+// Fetch the GET request with data payload
+getUser.fetch({ id: 1 });
+```
+
+**Syntax**
+
+```typescript
+onLoadingChange(fn: (status: boolean) => void): void;
+```
+
+#### Parameters {#loading-change-parameters}
+
+| Name     | Type                        | Description                      |
+| -------- | --------------------------- | -------------------------------- |
+| `fn`     | `(status: boolean) => void` | Listener function                |
+| `status` | `boolean`                   | Status to identify request state |
+
+### `onLoadingChangeOnce(fn)` {#loading-once-change-request}
+
+The `onLoadingChangeOnce` method in `AxiosClient` allows you to listen for changes in the loading status of a request once, indicating whether the request is in progress or completed. This method is particularly useful when you only need to observe the loading change once, making it suitable for scenarios where the same request may be called multiple times in your application.
+
+```typescript title="Example"
+// Initialize AxiosClient with the configured AxiosClientConfigurator
+const axiosClient = new AxiosClient(axiosConfigurator);
+
+// Example of making a GET request
+const getUser = axiosClient.get("/user");
+
+// Listen to request loading status changes
+getUser.onLoadingChangeOnce((status) => {
+  console.log(status); // Output: true (request in progress) or false (request done)
+});
+
+// Fetch the GET request with data payload
+getUser.fetch({ id: 1 });
+```
+
+**Syntax**
+
+```typescript
+onLoadingChangeOnce(fn: (status: boolean) => void): void;
+```
+
+#### Parameters {#loading-once-change-parameters}
+
+| Name     | Type                        | Description                      |
+| -------- | --------------------------- | -------------------------------- |
+| `fn`     | `(status: boolean) => void` | Listener function                |
+| `status` | `boolean`                   | Status to identify request state |
+
+### `onData(fn)` {#data-change-request}
+
+The `onData` method in `AxiosClient` enables you to listen to and read the success response data each time `fetch` has been called. `onData` will only be triggered when the request is successful. Your application can have multiple `onData` callbacks.
+
+```typescript title="Example"
+// Initialize AxiosClient with the configured AxiosClientConfigurator
+const axiosClient = new AxiosClient(axiosConfigurator);
+
+// Example of making a GET request
+const getUser = axiosClient.get<DataType>("/user");
+
+// Listen to the request's success response
+getUser.onData((data: DataType) => {
+  console.log(data); // Output: request success response
+});
+
+// Fetch the GET request with data payload
+getUser.fetch({ id: 1 });
+```
+
+**Syntax**
+
+```typescript
+onData<DataType>(fn: (data: DataType) => void): void;
+```
+
+#### Parameters {#data-change-parameters}
+
+| Name   | Type                       | Description       |
+| ------ | -------------------------- | ----------------- |
+| `fn`   | `(data: DataType) => void` | Listener function |
+| `data` | `DataType`                 | Response data     |
+
+### `onDataOnce(fn)` {#data-once-change-request}
+
+The `onDataOnce` method in `AxiosClient` enables you to listen to and read the success response data once when `fetch` has been called for first time. `onDataOnce` will only be triggered when the request is successful. Your application can have multiple `onDataOnce` callbacks.
+
+```typescript title="Example"
+// Initialize AxiosClient with the configured AxiosClientConfigurator
+const axiosClient = new AxiosClient(axiosConfigurator);
+
+// Example of making a GET request
+const getUser = axiosClient.get<DataType>("/user");
+
+// Listen to the request's success response
+getUser.onDataOnce((data: DataType) => {
+  console.log(data); // Output: request success response
+});
+
+// Fetch the GET request with data payload
+getUser.fetch({ id: 1 });
+```
+
+**Syntax**
+
+```typescript
+onDataOnce<DataType>(fn: (data: DataType) => void): void;
+```
+
+#### Parameters {#data-once-change-parameters}
+
+| Name   | Type                       | Description       |
+| ------ | -------------------------- | ----------------- |
+| `fn`   | `(data: DataType) => void` | Listener function |
+| `data` | `DataType`                 | Response data     |
+
+
+================================================
+File: guide/reference/utils/createComponent.mdx
+================================================
+The `createComponent` function empowers you to generate a fresh `WFComponent` instance based on a specified HTML element tag. This capability unlocks a world of potential for dynamically creating user interfaces on the fly.
+
+## Getting Started
+
+To start creating `WFComponent` instances using the `createComponent` function, follow these steps:
+
+```typescript title="Example"
+import { createComponent } from "@xatom/core";
+
+// Create a WFComponent from a <button> element
+const button = createComponent<HTMLButtonElement>("button");
+
+// Create a WFComponent from an <input> element and configure it as a file input
+const fileInput = createComponent<HTMLInputElement>("input");
+fileInput.setAttribute("type", "file");
+fileInput.addCssClass("input-primary");
+
+// Assuming you have a "myForm" variable representing a form, you can append the file input to it
+myForm.getFormComponent().appendChild(fileInput);
+```
+
+#### Syntax
+
+```typescript
+createComponent<T>(type: keyof HTMLElementTagNameMap): WFComponent<T>
+```
+
+#### Parameter
+
+| Name   | Type                          | Description                                |
+| ------ | ----------------------------- | ------------------------------------------ |
+| `type` | `keyof HTMLElementTagNameMap` | The HTML tag to create the component from. |
+
+
+================================================
+File: guide/reference/utils/navigate.mdx
+================================================
+The `navigate` function in the xAtom framework provides the ability to navigate to different pages within your web application.
+
+## Getting Started
+
+To begin using the `navigate` function, follow these steps:
+
+```typescript title="Example"
+import { navigate } from "@xatom/core";
+
+// Navigate to a specific path
+navigate("/dashboard");
+
+// Navigate to a path and replace the current page in the browsing history
+navigate({
+  to: "/sign-in",
+  type: "replace",
+});
+
+// Reload the current page
+navigate({
+  type: "reload",
+});
+```
+
+#### Syntax
+
+```typescript
+navigate(arg: string | { to: string; type: "replace" } | { type: "reload" }): void
+```
+
+#### Parameter
+
+| Name  | Type                                                                  | Description              |
+| ----- | --------------------------------------------------------------------- | ------------------------ |
+| `arg` | `string` or `{ to: string; type: "replace" }` or `{ type: "reload" }` | Navigation configuration |
+
+
+================================================
+File: guide/reference/utils/onReady.mdx
+================================================
+The `onReady` function in the xAtom framework is a useful utility that ensures your code is executed only when all web page resources have been fully loaded.
+
+## Getting Started
+
+To begin using the `onReady` function, follow these steps:
+
+> #### Pro Tip
+>
+> Use `onReady` as the entry point of your xAtom project. Place the `onReady` function in your project's entry file.
+
+```typescript title="Example"
+import { onReady } from "@xatom/core";
+
+onReady(() => {
+  // Add your business logic here
+});
+```
+
+#### Syntax
+
+```typescript
+onReady(cb: () => void): void
+```
+
+#### Parameter
+
+| Name | Type       | Description         |
+| ---- | ---------- | ------------------- |
+| `cb` | `function` | A callback function |
+
+

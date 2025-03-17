@@ -52,6 +52,11 @@ export const initRoutes = () => {
     initRefPlayer();
   });
 
+  new WFRoute("/erklaer-animationsvideos").execute(() => {
+    console.log(" Animation - Initializing components");
+    initBeispiel();
+  });
+
   // Team page route
   new WFRoute("/team").execute(() => {
     console.log("👥 Team Page - Initializing components");

@@ -13,7 +13,6 @@ import { initFotoproduktionMotion } from "../modules/animations/fotoproduktion-m
 import { initVideoproduktionSubpageMotion } from "../modules/animations/videoproduktion-motion";
 import { initBtsSlider } from "../modules/slider/bts-slider";
 import { initReferenceSlider } from "../modules/slider/ref-slider";
-import { initRefPlayer } from "../modules/videos/ref-player";
 import { initBeispiel } from "../modules/beispiel-vid-slid";
 import { initFotoBeispielSlider } from "../modules/slider/foto-beispiel-slider";
 
@@ -49,7 +48,7 @@ export const initRoutes = () => {
   new WFRoute("/referenzen").execute(() => {
     console.log(" Ref Page - Initializing components");
     initMotionHeader();
-    initRefPlayer();
+    initVideoPlayer();
   });
 
   new WFRoute("/erklaer-animationsvideos").execute(() => {

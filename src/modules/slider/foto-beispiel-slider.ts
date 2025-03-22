@@ -11,8 +11,9 @@ export const initFotoBeispielSlider = (animationSpeed = 10000) => {
         renderMode: "performance",
         drag: true,
         mode: "free",
+        rtl: index % 2 !== 0, // Even indices (0, 2, 4...) get rtl=false, odd indices get rtl=true
         slides: {
-          perView: 3,
+          perView: "auto",
           spacing: 16,
         },
         breakpoints: {

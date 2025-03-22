@@ -61,6 +61,7 @@ export const initRoutes = () => {
     console.log("👥 Team Page - Initializing components");
     initMotionHeader();
     initBtsSlider();
+    initFotoBeispielSlider();
     initVideoPlayer();
   });
 

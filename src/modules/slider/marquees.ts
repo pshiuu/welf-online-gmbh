@@ -10,7 +10,7 @@ export const initMarquee = () => {
     mode: "free",
 
     slides: {
-      perView: 5,
+      perView: 10,
       spacing: 16,
     },
     created(s) {
@@ -23,15 +23,33 @@ export const initMarquee = () => {
       s.moveToIdx(s.track.details.abs + 5, true, animation);
     },
     breakpoints: {
+      "(max-width: 1750px)": {
+        slides: {
+          perView: 8,
+          spacing: 16,
+        },
+      },
+      "(max-width: 1500px)": {
+        slides: {
+          perView: 7,
+          spacing: 16,
+        },
+      },
+      "(max-width: 1000px)": {
+        slides: {
+          perView: 4,
+          spacing: 16,
+        },
+      },
       "(max-width: 768px)": {
         slides: {
-          perView: 2.5,
+          perView: 3,
           spacing: 16,
         },
       },
       "(max-width: 500px)": {
         slides: {
-          perView: 1.5,
+          perView: 3,
           spacing: 16,
         },
       },

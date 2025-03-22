@@ -13,7 +13,7 @@ export const initFotoBeispielSlider = (animationSpeed = 10000) => {
         mode: "free",
         rtl: index % 2 !== 0, // Even indices (0, 2, 4...) get rtl=false, odd indices get rtl=true
         slides: {
-          perView: "auto",
+          perView: 3,
           spacing: 16,
         },
         breakpoints: {
